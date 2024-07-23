@@ -2,13 +2,22 @@
 title: "Microbiome_baseline"
 format: docx
 editor: visual
+bibliography: references.bib
 ---
 
-## Quarto
+## Abstract
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+## Introduction 
 
-## Running Code
+Pollinators play a critical role in the functioning of natural ecosystems and agricultural systems worldwide, facilitating the reproduction of over 85% of flowering plants [@ollerton2011] and contributing to the production of 75% of global food crops [@klein2006]. However, pollinators are increasingly at risk due to a multitude of global change drivers. Climate change, with its impacts on temperature and weather patterns, disrupts pollinator behaviors and habitats. Habitat loss due to urbanization, agricultural expansion, and deforestation further fragments the environments pollinators depend on, while pesticide use and pollution introduce additional stresses. These factors, compounded by the spread of diseases and invasive species, threaten the survival of pollinator populations, leading to cascading effects on ecosystems and human food systems.
+
+A relatively unexplored yet crucial aspect of populations is their microbiome, the community of microorganisms living within and on them. The microbiome can significantly impact the health, development, and survival of organisms, influencing digestion, immune function, and disease resistance. In pollinators, such as bees, the gut microbiome plays a vital role in nutrient absorption, detoxification of harmful substances, and protection against pathogens. Disruptions to the microbiome, whether through environmental changes, pesticide exposure, or other stressors, can compromise these essential functions and lead to increased vulnerability and mortality. Understanding the composition and functionality of microbiomes is therefore critical, not only for gaining insights into the biology and ecology of pollinator species but also for developing strategies to mitigate the adverse effects of global change drivers. 
+
+Most research on pollinator microbiomes has focused on managed species like honeybees and certain bumblebee species, providing valuable insights into their gut microbial communities and how these microorganisms influence their health and productivity. However, our understanding of the microbiomes of wild pollinator species remains limited. We know even less about how these microbiomes change over time or how environmental factors shape them. A core microbiome, often vertically inherited from mother to offspring, ensures the transmission of essential microorganisms that support fundamental physiological processes. In addition to this core microbiome, pollinators also acquire microbes from their environment, particularly through their diet, which can include nectar, pollen, and other floral resources. These acquired microorganisms can introduce new functions and adaptations but also make pollinators susceptible to environmental changes and stressors. Investigating the microbiomes of wild pollinators and their dynamics offers a promising avenue to understand their resilience and adaptability in the face of global change.
+
+Here, we focus on understanding the microbiome composition and dynamics of a wild pollinator species, the common carder bee (*Bombus pascuorum*), throughout the flowering season and across different sites that vary in floral diversity. By analyzing the gut microbiomes of these bees, we aim to uncover how the diversity and abundance of flower species in their environment influence the microbial communities they harbor. This study will shed light on the temporal changes in microbiome composition within *B. pascuorum* and reveal how different ecological contexts shape these vital microbial communities. Our findings will contribute to a deeper understanding of the ecological interactions between wild pollinators and their environments, providing insights that are essential for conservation efforts and the maintenance of healthy pollinator populations.
+
+## Methods
 
 When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
 
