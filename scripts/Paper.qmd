@@ -19,6 +19,140 @@ Here, we focus on understanding the microbiome composition and dynamics of a wil
 
 ## Methods
 
+\
+We gather samples of the common carder bee, Bombus pascuorum (L.) in 16 different sites of the Gorbeia Natural Park (​​[43.035°N 2.817°W](https://geohack.toolforge.org/geohack.php?pagename=Gorbeia_Natural_Park&params=43.035_N_2.817_W_type:landmark)) in the autonomous community of the Basque Country in Spain. The team was composed of four people that split every sampling day so that 2 points were studied simultaneously per field work day. The sampling period lasted from April to July 2023, during these four months every two weeks we will go across all the 16 sampling points and treat the samples in the lab, if the weather conditions allow. Going through all the sites was considered a round, having a total of 6 rounds by the end of the sampling period. Every field day a maximum of 5 B. pascourum (L.) were caught per site if possible. All samples were labeled and stored independently in 50 ml vials at -20ºC. Finally a total of 132 samples were caught throughout the season.
+
+\
+Sample preparation
+
+All bumblebees samples were measured in the lab, two measurements were taken from each sample: total length and abdomen length. Guts were extracted using sterile forceps and stored in 96% alcohol until the DNA extraction. Bacterial, plant and fungi DNA was extracted following Macherey-Nagel NucleoSpin® 96 Soil protocol (2021) and were  amplified in duplicate using the DFD forward and ASDFAS reverse primers.
+
+**Bombus pascuorum microbiome**
+
+\
+
+To assess the Bombus pascuorum’s size and microbiome variation among sites and during the whole prolongation of the field season,  Bombus pascuorum individuals were caught using entomological nets every day in every site. A maximum of 5 individuals were caught per site if possible, those samples were caught at any possible moment and any worker could catch them. All catched individuals were stored individually in 50mL vials with an identification tag. Captured specimens were cold-anesthetized in cooler bags with ice packs and later stored in a freezer at -20ºC. 
+
+The total length and the abdomen length were measured for every individual before gut extraction. Guts were removed using sterile tweezers, forceps and precision dissecting micro scissors and stored in a 96% ethanol solution in individual 2ml vials for further analysis (until DNA extraction?). The remaining bumblebee tissues were kept in a -20ºC freezer for future studies. 
+
+\
+\
+
+Gut DNA extraction, amplification and sequencing
+
+\
+
+We characterized bacterial, plant and fungal samples inside the bumblebee guts with community metabarcoding. DNA was extracted following the NucleoSpin® (Macherey-Nagel, 2021) protocol and later amplified targeting 16S and ITS1or2? regions with specific primers. Illumina MIseq?
+
+To avoid site and period vias all samples were randomized using a randomizer program before the DNA extraction, creating a new individual code for each sample.
+
+\
+
+**DNA extraction protocol (Annex)**
+
+\
+
+Each gut was placed in an independent 2mL vial containing ceramic beads and let the ethanol in the samples evaporate. Once the samples were dry from ethanol, 700uL of Lysis buffer (SL1) were added to each vial and mechanically homogenized them (Program settings: 1750 rpm - 1 min. shake and 15s stop, 5 times). 
+
+The homogenized mixture was cleaned from contaminants using a precipitation method. The samples were centrifuged at 11,000 x g for 2 min to eliminate the foam caused by the detergent. 150uL of Buffer SL3 were added to each sample and vortexed for 5s. The samples were later put into crushed ice for 5 minutes for incubation at 0-4ºC. To then again centrifuge them at 11,000 x g for 1 min.
+
+To filter the lysate, we used a square-well block and the NucleoSpin® Inhibitor Removal Plate 550uL of the clear supernatant were loaded to each well of the plate. The plates were centrifuged at 2,250 x g for 13 minutes and discarded the NucleoSpin® Inhibitor Removal Plate. To help adjust the binding conditions, we added 250uL Buffer SB to the flow-through in each well of the square-well block and mixed it pipetting up and down.
+
+To achieve the binding of the DNA, in a new square-well block we placed the NucleoSpin® Soil Binding Plate and we loaded 725ul of sample on each well. We spined the samples at 2,250 x g for 13 minutes and discarded the flow-through. 
+
+To wash and dry the NucleoSpin® Soil Binding Plate we did 4 washes. 
+
+1st wash - We added 500 ul of Buffer SB to each well of the NucleoSpin® Soil Binding Plate and centrifuged it at 2,250 x g for 13 mins. Then we discarded the flow-through.
+
+2nd wash - We added 550ul of Buffer SW1 to each well of the NucleoSpin® Soil Binding Plate and centrifuged it at 2,250 x g for 5 mins. Then we discarded the flow-through. 
+
+3rd wash - We added 700ul of Buffer SW2 to each well of the NucleoSpin® Soil Binding Plate and centrifuged it at 2,250 x g for 5 mins. Then we discarded the flow-through.
+
+4th wash - We added 700ul of Buffer SW2 to each well of the NucleoSpin® Soil Binding Plate and centrifuged it at 2,250 x g for 13 mins. Then discarded the flow-trough.
+
+\
+
+To dry the silica membrane from the washes, we incubated the plate for 20 minutes at 37ºC. 
+
+Finally, to elute the DNA, we placed the NucleoSpin® Soil Binding Plate on an opened rack of Tube Strips and loaded 100ul of Buffer SE into the center of each well of the silica membrane of the NucleoSpin® Soil Binding Plate. We let it incubate for 1 minute and later centrifuged at 2,250 x g for 5 minutes. Each of the Tube Strips was labeled according to the sample number and contained 100ul of DNA. A total of 132 samples were obtained this way.
+
+To check that the DNA was successfully extracted from the samples, nanodrop tests were performed in random samples for each extraction batch. 
+
+\
+
+PCR conditions (Annex)
+
+\
+
+To assess the DNA amplification of the samples two step PCRs were performed (Step 1 and Step 2 PCR). Step 1 PCRs were performed for bacteria, plant and fungi genetic material. The volumes of the reagents and the DNA template used for the master mix were the same for all of the three sample types; the only difference was the specific primers used to amplify the desired genetic material (Table xxx). All PCRs were performed in a 96 well plate and were treated independently. For each group two plates were used, one containing 96 samples and another with the remaining 40 samples (this plates also include negative controls). 
+
+Step 1 PCR was performed twice for each sample and then the same samples were pooled together. 7.5uL of each of the same samples from the replicate plates were used to create a new plate containing 15uL on each of the sample wells. To check that the PCRs properly amplified the interest region a 2% agarose gel electrophoresis was performed between Step 1 and Step 2 PCRs, to verify the size of the desired amplicon.
+
+\
+
+Table xxx. Volume of each reagent used for the mastermix for one sample of the Step 1 PCR. Specific primers were used to amplify bateria, plant or fungi DNA.
+
+|                        |              |
+|------------------------|--------------|
+| Reagent                | Volume in uL |
+| 2X Buffer mix          | 7.5          |
+| MiliQ PCR grade (H2O)  | 4.18         |
+| Primer Forward (10 uM) | 0.6          |
+| Primer Reverse (10 uM) | 0.6          |
+| 3G KAPA (Polymerase)   | 0.12         |
+| DNA template           | 2            |
+| **Total volume**       | **15**       |
+
+\
+\
+
+The thermocycler protocol used for the Step 1 amplification was the following:
+
+Bacteria
+
+95ºC – 2min, 30 cycles of 95ºC – 20s, 53ºC – 20s, 72ºC – 30s; 72ºC final extension 5 min
+
+\
+
+Fungi and Plant (2 more cycles were added to increase the amount of amplicons in the samples due to low genetic material).
+
+95ºC – 2min, 32 cycles of 95ºC – 20s, 53ºC – 20s, 72ºC – 30s; 72ºC final extension 5 min
+
+\
+\
+\
+\
+
+Cleaning Step 
+
+\
+\
+
+Pooling step
+
+\
+
+To assess the pooling step, an isovolumetric pool was performed with the indexed samples. 5uL of each of the wells were used to combine it in the final library that was sent for sequencing. For the 96 sample well plates a total volume of the library was of 480 uL, while for the 40 sample well plates libraries the total volume consisted on 200 uL. Each of the plates were combined in a separate/independent microtube. For each of the treatments (bacteria, plant and fungi) one 96 sample and one 40 sample library were created; resulting in 6 microtubes with the final libraries. 
+
+	
+
+	Bacteria library: 96 samples (480uL) and 40 samples (200uL)
+
+	Fungi library: 96 samples (480uL) and 40 samples (200uL)
+
+	Plant library: 96 samples (480uL) and 40 samples (200uL)
+
+\
+
+Data analysis
+
+\
+\
+\
+\
+\
+\
+
 When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
 
 ```{r}
