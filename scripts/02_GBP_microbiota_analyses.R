@@ -1,5 +1,4 @@
-###################################################################
-###
+
 ###     Title: Bombus pascuorum microbiome
 ###     Authors: Chueca Luis J., Poza Jon, Dhami Manpreet P., Donald Marion L., 
 ###     Rose Jennifer, Salgado-Irazabal Xabier, Hermosilla Brais,
@@ -8,7 +7,6 @@
 ###     Related project: GorBEEa
 ###     Description: Metabarcoding analysis in R
 ###
-##############################################################
 
 
 # Load libraries
@@ -28,11 +26,7 @@ library (dplyr) ; packageVersion("dplyr")
 ps.gbp23 <- readRDS("data/ps.gbp23.RDS")
 print(ps.gbp23)
 
-####################################################
-###                                              ###
-###       2. Comparison between periods          ###
-###                                              ###
-####################################################
+#       1. Comparison between periods     ####
 
 # From the phyloseq contaminant-free file
 # Extract the ASV count table, sample_data and tax_table
@@ -79,11 +73,7 @@ plot_ordination(vst_physeq, vst_pcoa, color="period") +
   scale_color_manual(values=unique(sample_data_tab.cl$color_p[order(sample_data_tab.cl$period)])) + 
   theme_bw() + theme(legend.position="none")
 
-####################################################
-###                                              ###
-###       3. Comparison between sites            ###
-###                                              ###
-####################################################
+#       2. Comparison between sites            ####
 
 deseq_counts <- DESeqDataSetFromMatrix(count_tab.cl, colData = sample_data_tab.cl, design = ~site) 
 deseq_counts_vst <- varianceStabilizingTransformation(deseq_counts)
@@ -124,33 +114,29 @@ plot_ordination(vst_physeq, vst_pcoa, color="site") +
   theme_bw() + theme(legend.position="none")
 
 
-####################################################
-###                                              ###
-###       4. Alpha diversity                     ###
-###                                              ###
-####################################################
+#       3. Alpha diversity      ####
 
-# Rarefaction curves 
+
+##      3.1. Rarefaction curves      ####
 rarecurve(t(count_tab.cl), step=100, col=sample_data_tab.cl$color_p, lwd=2, ylab="ASVs", label=F)
 # and adding a vertical line at the fewest seqs in any sample
-abline(v=(min(rowSums(t(count_tab)))))
+abline(v=(min(rowSums(t(count_tab.cl)))))
 
 
-###     4.a) Richness and diversity estimates
-###
+##      3.2. Richness and diversity estimates   ####
 
 ################################## Perhaps not neccessary
 # first we need to create a phyloseq object using our un-transformed count table
-count_tab_phy <- otu_table(count_tab, taxa_are_rows=T)
-tax_tab_phy <- tax_table(tax_tab)
+count_tab_phy <- otu_table(count_tab.cl, taxa_are_rows=T)
+tax_tab_phy <- tax_table(tax_table.cl)
 
 ASV_physeq <- phyloseq(count_tab_phy, tax_tab_phy, sample_info_tab_phy)
 
 
 
-
-ps.gbp23
-sample_data_tab.cl
+# LJ remove?
+#ps.gbp23
+#sample_data_tab.cl
 ##################################
 
 
@@ -213,22 +199,21 @@ combined_plot
 
 # Not significant difference between periods and sites.
 
-####
-####      4.b) TAXONOMIC SUMMARIES
-####
+##      3.3. TAXONOMIC SUMMARIES      ####
 
 
-ps.gbp23
-sample_data_tab.cl
+#ps.gbp23
+#sample_data_tab.cl
 tax_table.cl
-count_tab.cl
+#count_tab.cl
 
 # using phyloseq to make a count table that has summed all ASVs
 # that were in the same phylum
 phyla_counts_tab <- otu_table(tax_glom(ps.gbp23, taxrank="Phylum")) 
 
+
 # making a vector of phyla names to set as row names
-phyla_tax_vec <- as.vector(tax_table(tax_glom(ps.gbp23, taxrank="Phylum"))[,"Phylum"]) 
+phyla_tax_vec <- as.vector(tax_table(tax_glom(ps.gbp23, taxrank= "Phylum"))[,"Phylum"]) 
 rownames(phyla_counts_tab) <- as.vector(phyla_tax_vec)
 
 # we also have to account for sequences that weren't assigned any
@@ -249,10 +234,10 @@ temp_major_taxa_counts_tab <- phyla_and_unidentified_counts_tab[!row.names(phyla
 
 # making count table broken down by class (contains classes beyond the
 # Proteobacteria too at this point)
-class_counts_tab <- otu_table(tax_glom(ps.gbp23, taxrank="Class")) 
+class_counts_tab <- otu_table(tax_glom(ps.gbp23, taxrank= "Class")) 
 
 # making a table that holds the phylum and class level info
-class_tax_phy_tab <- tax_table(tax_glom(ps.gbp23, taxrank="Class")) 
+class_tax_phy_tab <- tax_table(tax_glom(ps.gbp23, taxrank= "Class")) 
 
 phy_tmp_vec <- class_tax_phy_tab[,2]
 class_tmp_vec <- class_tax_phy_tab[,3]
@@ -266,7 +251,7 @@ proteo_classes_vec <- as.vector(class_tax_tab[class_tax_tab$Phylum == "Proteobac
 # rather than an ASV identifier
 rownames(class_counts_tab) <- as.vector(class_tax_tab$Class) 
 
-# making a table of the counts of the Proteobacterial classes
+# making a table of the counts of the Proteobacteria classes
 proteo_class_counts_tab <- class_counts_tab[row.names(class_counts_tab) %in% proteo_classes_vec, ] 
 
 # there are also possibly some some sequences that were resolved to the level
@@ -282,7 +267,7 @@ major_taxa_counts_tab <- rbind(temp_major_taxa_counts_tab, proteo_class_counts_t
 # and to check we didn't miss any other sequences, we can compare the column
 # sums to see if they are the same
 # if "TRUE", we know nothing fell through the cracks
-identical(colSums(major_taxa_counts_tab), colSums(count_tab)) 
+identical(colSums(major_taxa_counts_tab), colSums(count_tab.cl)) 
 
 # now we'll generate a proportions table for summarizing:
 major_taxa_proportions_tab <- apply(major_taxa_counts_tab, 2, function(x) x/sum(x)*100)
@@ -339,7 +324,7 @@ head(filt_major_taxa_proportions_tab_for_plot)
 # function
 # here we're making a new table by pulling what we want from the sample
 # information table
-sample_info_for_merge<-data.frame("Sample"=row.names(sample_info_tab), "period"=sample_info_tab$period, "color"=sample_info_tab$color_p, stringsAsFactors=F)
+sample_info_for_merge<-data.frame("Sample"=row.names(sample_info_tab_phy), "period"=sample_info_tab_phy$period, "color"=sample_info_tab_phy$color_p, stringsAsFactors=F)
 
 # and here we are merging this table with the plotting table we just made
 # (this is an awesome function!)
@@ -398,7 +383,7 @@ periods <- c("p01", "p02", "p03", "p04", "p05", "p06")
 # Store all generated plots in a list
 plots <- list()
 for (period in periods) {
-  plots[[period]] <- generate_major_taxa_plot(period, filt_major_taxa_proportions_tab_for_plot.g2, sample_info_tab)
+  plots[[period]] <- generate_major_taxa_plot(period, filt_major_taxa_proportions_tab_for_plot.g2, sample_info_tab_phy)
 }
 
 
@@ -417,96 +402,6 @@ major_taxa_combined
 #}
 
 
-# LCJ # This correspond to the previous previous loop. Perhaps better remove
-###########################################################
-
-# let's set some helpful variables first:
-p01_sample_IDs <- row.names(sample_info_tab)[sample_info_tab$period == "p01"]
-p02_sample_IDs <- row.names(sample_info_tab)[sample_info_tab$period == "p02"]
-p03_sample_IDs <- row.names(sample_info_tab)[sample_info_tab$period == "p03"]
-p04_sample_IDs <- row.names(sample_info_tab)[sample_info_tab$period == "p04"]
-p05_sample_IDs <- row.names(sample_info_tab)[sample_info_tab$period == "p05"]
-p06_sample_IDs <- row.names(sample_info_tab)[sample_info_tab$period == "p06"]
-
-
-
-# first we need to subset our plotting table to include just the rock samples to plot
-filt_major_taxa_proportions_p02_only_tab_for_plot.g <- filt_major_taxa_proportions_tab_for_plot.g2[filt_major_taxa_proportions_tab_for_plot.g2$Sample %in% p02_sample_IDs, ]
-# and then just the water samples
-filt_major_taxa_proportions_p01_only_tab_for_plot.g <- filt_major_taxa_proportions_tab_for_plot.g2[filt_major_taxa_proportions_tab_for_plot.g2$Sample %in% p01_sample_IDs, ]
-
-filt_major_taxa_proportions_p03_only_tab_for_plot.g <- filt_major_taxa_proportions_tab_for_plot.g2[filt_major_taxa_proportions_tab_for_plot.g2$Sample %in% p03_sample_IDs, ]
-
-filt_major_taxa_proportions_p04_only_tab_for_plot.g <- filt_major_taxa_proportions_tab_for_plot.g2[filt_major_taxa_proportions_tab_for_plot.g2$Sample %in% p04_sample_IDs, ]
-
-filt_major_taxa_proportions_p05_only_tab_for_plot.g <- filt_major_taxa_proportions_tab_for_plot.g2[filt_major_taxa_proportions_tab_for_plot.g2$Sample %in% p05_sample_IDs, ]
-
-filt_major_taxa_proportions_p06_only_tab_for_plot.g <- filt_major_taxa_proportions_tab_for_plot.g2[filt_major_taxa_proportions_tab_for_plot.g2$Sample %in% p06_sample_IDs, ]
-
-
-# and now we can use the same code as above just with whatever minor alterations we want
-
-# Period p01 samples
-major_taxa_p01 <- ggplot(filt_major_taxa_proportions_p01_only_tab_for_plot.g, aes(Major_Taxa, Proportion)) +
-  scale_y_continuous(limits=c(0,100)) + # adding a setting for the y axis range so the rock and water plots are on the same scale
-  geom_jitter(aes(color=factor(period)), size=2, width=0.15, height=0) +
-  scale_color_manual(values=unique(filt_major_taxa_proportions_p01_only_tab_for_plot.g$color[order(filt_major_taxa_proportions_p01_only_tab_for_plot.g$period)])) +
-  geom_boxplot(fill=NA, outlier.color=NA) + theme_bw() +
-  theme(axis.text.x=element_text(angle=45, hjust=1), legend.position="none") +
-  labs(x="Major Taxa", y="% of 16S rRNA gene copies recovered", title="Period 01 samples")
-
-# Period p02 samples
-major_taxa_p02 <- ggplot(filt_major_taxa_proportions_p02_only_tab_for_plot.g, aes(Major_Taxa, Proportion)) +
-  scale_y_continuous(limits=c(0,100)) + # adding a setting for the y axis range so the rock and water plots are on the same scale
-  geom_jitter(aes(color=factor(period)), size=2, width=0.15, height=0) +
-  scale_color_manual(values=unique(filt_major_taxa_proportions_p02_only_tab_for_plot.g$color[order(filt_major_taxa_proportions_p02_only_tab_for_plot.g$period)])) +
-  geom_boxplot(fill=NA, outlier.color=NA) + theme_bw() +
-  theme(axis.text.x=element_text(angle=45, hjust=1), legend.position="none") +
-  labs(x="Major Taxa", y="% of 16S rRNA gene copies recovered", title="Period 02 samples")
-
-# Period p03 samples
-major_taxa_p03 <- ggplot(filt_major_taxa_proportions_p03_only_tab_for_plot.g, aes(Major_Taxa, Proportion)) +
-  scale_y_continuous(limits=c(0,100)) + # adding a setting for the y axis range so the rock and water plots are on the same scale
-  geom_jitter(aes(color=factor(period)), size=2, width=0.15, height=0) +
-  scale_color_manual(values=unique(filt_major_taxa_proportions_p03_only_tab_for_plot.g$color[order(filt_major_taxa_proportions_p03_only_tab_for_plot.g$period)])) +
-  geom_boxplot(fill=NA, outlier.color=NA) + theme_bw() +
-  theme(axis.text.x=element_text(angle=45, hjust=1), legend.position="none") +
-  labs(x="Major Taxa", y="% of 16S rRNA gene copies recovered", title="Period 03 samples")
-
-# Period p04 samples
-major_taxa_p04 <- ggplot(filt_major_taxa_proportions_p04_only_tab_for_plot.g, aes(Major_Taxa, Proportion)) +
-  scale_y_continuous(limits=c(0,100)) + # adding a setting for the y axis range so the rock and water plots are on the same scale
-  geom_jitter(aes(color=factor(period)), size=2, width=0.15, height=0) +
-  scale_color_manual(values=unique(filt_major_taxa_proportions_p04_only_tab_for_plot.g$color[order(filt_major_taxa_proportions_p04_only_tab_for_plot.g$period)])) +
-  geom_boxplot(fill=NA, outlier.color=NA) + theme_bw() +
-  theme(axis.text.x=element_text(angle=45, hjust=1), legend.position="none") +
-  labs(x="Major Taxa", y="% of 16S rRNA gene copies recovered", title="Period 04 samples")
-
-# Period p05 samples
-major_taxa_p05 <- ggplot(filt_major_taxa_proportions_p05_only_tab_for_plot.g, aes(Major_Taxa, Proportion)) +
-  scale_y_continuous(limits=c(0,100)) + # adding a setting for the y axis range so the rock and water plots are on the same scale
-  geom_jitter(aes(color=factor(period)), size=2, width=0.15, height=0) +
-  scale_color_manual(values=unique(filt_major_taxa_proportions_p05_only_tab_for_plot.g$color[order(filt_major_taxa_proportions_p05_only_tab_for_plot.g$period)])) +
-  geom_boxplot(fill=NA, outlier.color=NA) + theme_bw() +
-  theme(axis.text.x=element_text(angle=45, hjust=1), legend.position="none") +
-  labs(x="Major Taxa", y="% of 16S rRNA gene copies recovered", title="Period 05 samples")
-
-# Period p06 samples
-major_taxa_p06 <- ggplot(filt_major_taxa_proportions_p06_only_tab_for_plot.g, aes(Major_Taxa, Proportion)) +
-  scale_y_continuous(limits=c(0,100)) + # adding a setting for the y axis range so the rock and water plots are on the same scale
-  geom_jitter(aes(color=factor(period)), size=2, width=0.15, height=0) +
-  scale_color_manual(values=unique(filt_major_taxa_proportions_p06_only_tab_for_plot.g$color[order(filt_major_taxa_proportions_p06_only_tab_for_plot.g$period)])) +
-  geom_boxplot(fill=NA, outlier.color=NA) + theme_bw() +
-  theme(axis.text.x=element_text(angle=45, hjust=1), legend.position="none") +
-  labs(x="Major Taxa", y="% of 16S rRNA gene copies recovered", title="Period 06 samples")
-#################################################################
-
-
-
-
-################################################################
-################################################################
-
 # https://benjjneb.github.io/dada2/tutorial.html
 
 # Transform data to proportions as appropriate for Bray-Curtis distances
@@ -522,30 +417,16 @@ plot_ordination(ASV_physeq.prop, ord.nmds.bray, color="period", title="Bray NMDS
   scale_color_manual(values = viridis_palette) +
   coord_cartesian(xlim = c(-1, 1), ylim = c(-1, 1))
 
-
 # Bar plot
 top20 <- names(sort(taxa_sums(ps.gbp23), decreasing=TRUE))[1:20]
 ASV_physeq.top20 <- transform_sample_counts(ps.gbp23, function(OTU) OTU/sum(OTU))
 ASV_physeq.top20 <- prune_taxa(top20, ASV_physeq.top20)
 plot_bar(ASV_physeq.top20, x="period", fill="Genus") #+ facet_wrap(~When, scales="free_x")
 
-plot_bar(ASV_physeq.top20, x="Sample", fill="Genus") #+ facet_wrap(~When, scales="free_x")
-
-
-################################################################
-# filter out samples we don’t want to include in our analysis such as the extraction and pcr blanks
-
-# LJC   # We removed this negative controls before
-# No Whites (NW)
-#ASV_physeq.NW <- ASV_physeq %>%
-#  subset_samples(type == "sample") %>%
-#  prune_taxa(taxa_sums(.) > 0, .)
-################################################################
-
 # Now we will filter out Eukaryotes, Archaea, chloroplasts and mitochondria, because we only intended to amplify bacterial sequences
 ASV_physeq.NW.Bact <- ps.gbp23 %>%
   subset_taxa(
-    Kingdom == "Bacteria" &
+    Kingdom == "Bacteria" & #sometimes Kingdom
       Family  != "Mitochondria" &
       Order   != "Chloroplast"
   )
@@ -576,8 +457,6 @@ GorBEEa_2023_phylum <- ASV_physeq.NW.Bact %>%
   psmelt() %>%                                         # Melt to long format
   filter(Abundance > 0.02) %>%                         # Filter out low abundance taxa
   arrange(Phylum)                                      # Sort data frame alphabetically by phylum
-
-
 
 ggplot(GorBEEa_2023_phylum, aes(x = period, y = Abundance, fill = Phylum)) + 
   #facet_grid(site~.) +
@@ -642,17 +521,18 @@ genus_composition_indv <- ggplot(GorBEEa_2023_genus, aes(x = Sample, y = Abundan
 
 plot(genus_composition_indv)
 
+
+### LJ: I cannot save good figures in pdf
+
 jpeg(filename = "genus_composition_indv.jpeg", width = 800, height = 600, quality = 100)
 print(genus_composition_indv)
 dev.off()
 
 ggsave("/Users/luisja/Downloads/genus_composition_indv.png", plot = genus_composition_period, width = 8, height = 6, units = "in", dpi = 300)
 
-###############################
 ###
 ###     Group by periods
 ###
-##############################
 
 sample_counts <- GorBEEa_2023_genus %>%
   group_by(period) %>%
@@ -672,6 +552,8 @@ genus_composition_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = Abund
   ggtitle("Genus Composition of GorBEEa \n Bacterial Communities by Period")
 
 plot(genus_composition_period)
+
+### LJ: I cannot save good figures in pdf
 
 jpeg(filename = "genus_composition_period.jpeg", width = 800, height = 600, quality = 100)
 print(genus_composition_period)
@@ -710,6 +592,8 @@ genus_composition_site <- ggplot(GorBEEa_2023_genus, aes(x = site, y = Abundance
 
 plot(genus_composition_site)
 
+### LJ: I cannot save good figures in pdf
+
 jpeg(filename = "genus_composition_site.jpeg", width = 800, height = 600, quality = 100)
 print(genus_composition_site)
 dev.off()
@@ -745,6 +629,8 @@ genus_composition_site_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = 
   ggtitle("Genus Composition of GorBEEa \n Bacterial Communities by Site & Period") 
 
 plot(genus_composition_site_period)
+
+### LJ: I cannot save good figures in pdf
 
 jpeg(filename = "genus_composition_site_period.jpeg", width = 800, height = 600, quality = 100)
 print(genus_composition_site_period)

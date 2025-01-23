@@ -1,4 +1,3 @@
-###################################################################
 ###
 ###     Title: Bombus pascuorum microbiome
 ###     Authors: Chueca Luis J., Poza Jon, Dhami Manpreet P., Donald Marion L., 
@@ -8,7 +7,6 @@
 ###     Related project: GorBEEa
 ###     Description: Metabarcoding analysis in R
 ###
-##############################################################
 
 
 # Load libraries
@@ -34,17 +32,20 @@ otu_table_obj <- otu_table(count_tab, taxa_are_rows = TRUE)
 tax_table_obj <- tax_table(as.matrix(tax_tab))
 sample_data_obj <- sample_data(sample_info_tab)
 
+# Define the new column names
+new_column_names <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
+# Assign the new column names to the tax_table
+colnames(tax_table_obj) <- new_column_names
+# Verify the change
+colnames(tax_table_obj)
+
 physeq <- phyloseq(otu_table_obj, tax_table_obj, sample_data_obj)
 print(physeq)
 head(sample_data(physeq))
 
-#############################################
-###                                       ###
-###       1. Check for contaminants       ###
-###                                       ###
-#############################################
+#      1. Check for contaminants      ####
 
-# 1.a) Inspect Library Sizes
+## 1.a) Inspect Library Sizes     ####
 
 df <- as.data.frame(sample_data(physeq)) # Put sample_data into a ggplot-friendly data.frame
 max_negative <- max(df$quant_reading[df$type == "negative"]) # Calculate the highest quant_reading for "negative" samples
@@ -75,7 +76,7 @@ plot
 ##########################################################################################################################
 
 
-# 1.b) Identify Contaminants - Prevalence
+## 1.b) Identify Contaminants - Prevalence      ####
 
 # Check different threshold values
 
@@ -141,14 +142,14 @@ ggplot(data=df.pa, aes(x=pa.neg, y=pa.pos, color=contaminant)) + geom_point() +
   xlab("Prevalence (Negative Controls)") + ylab("Prevalence (True Samples)")
 
 
-# 1.c) Remove contaminants
+## 1.c) Remove contaminants     ####
 
 # create phyloseq object with contaminant ASVs removed  
 ps.nocont <- prune_taxa(!contamdf.prev$contaminant, physeq)
 # create a phyloseq object with only contaminant ASVs
 ps.cont <- prune_taxa(contamdf.prev$contaminant, physeq)
 
-# 1.d) Remove negative controls from phyloseq object
+## 1.d) Remove negative controls from phyloseq object     ####
 
 # Filter out "negative" samples based on the "type" variable in sample_data
 ps.gbp23 <- prune_samples(sample_data(ps.nocont)$type == "sample", ps.nocont)
