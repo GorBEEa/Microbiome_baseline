@@ -6,4 +6,7 @@ Includes data and analysis of data on microbiome composition through time and sp
 ASVs where obtained following [DADA2_pipeline](https://github.com/GorBEEa/DADA2) repository
 
 ## Check for contaminants
-* `01_decotam.R`: Remove putative contaminants with [decotam](https://github.com/benjjneb/decontam/tree/master) R package. 
+* `01_decotam.R`: Remove putative contaminants with [decotam](https://github.com/benjjneb/decontam/tree/master) R package.
+
+## Taxonomic analyses
+* `02_GBP_microbiota_analyses.R` 
