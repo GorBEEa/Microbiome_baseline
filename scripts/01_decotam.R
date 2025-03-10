@@ -13,6 +13,7 @@
 library(decontam); packageVersion("decontam")
 library(phyloseq) ; packageVersion("phyloseq")
 library(ggplot2); packageVersion("ggplot2")
+library(Biostrings); packageVersion("Biostrings")
 
 # Load data
 count_tab <- read.table("data/dada2/2023_16S_GorBEEa_prj_ASVs_counts.tsv", header=T, row.names=1,
@@ -22,6 +23,8 @@ tax_tab <- as.matrix(read.table("data/dada2/2023_16S_GorBEEa_prj_ASVs_taxonomy.t
                                 row.names=1, check.names=F, sep="\t"))
 
 sample_info_tab <- read.delim("data/dada2/sample_info.tsv", header=T, row.names=1, check.names=F, sep="\t")
+
+fasta_seqs <- readDNAStringSet("data/dada2/2023_16S_GorBEEa_prj_ASVs.fa")
 
 # Setting the color column to be of type "character", which helps later
 sample_info_tab$color_p <- as.character(sample_info_tab$color_p)
@@ -149,7 +152,19 @@ ps.nocont <- prune_taxa(!contamdf.prev$contaminant, physeq)
 # create a phyloseq object with only contaminant ASVs
 ps.cont <- prune_taxa(contamdf.prev$contaminant, physeq)
 
-## 1.d) Remove negative controls from phyloseq object     ####
+## 1.d) Remove contaminants from fasta file     ####
+contam_asvs <- taxa_names(ps.cont)  # Get the ASV IDs of contaminants from ps.cont
+# Extract the ASV IDs from the headers of the FASTA sequences
+fasta_ids <- sapply(names(fasta_seqs), function(x) strsplit(x, " ")[[1]][1])
+# Filter out the contaminant ASVs
+remaining_ids <- fasta_ids[!fasta_ids %in% contam_asvs]  # IDs to keep
+filtered_fasta <- fasta_seqs[which(fasta_ids %in% remaining_ids)]  # Keep only non-contaminant ASVs
+# Check the result
+length(filtered_fasta)  # Number of remaining sequences after filtering
+# Write the filtered sequences to a new FASTA file
+writeXStringSet(filtered_fasta, file = "data/2023_16S_GorBEEa_prj_ASVs_filt_0.01.fa")
+
+## 1.e) Remove negative controls from phyloseq object     ####
 
 # Filter out "negative" samples based on the "type" variable in sample_data
 ps.gbp23 <- prune_samples(sample_data(ps.nocont)$type == "sample", ps.nocont)
@@ -161,5 +176,5 @@ table(sample_data(ps.nocont)$type)
 table(sample_data(ps.gbp23)$type)
 
 # Save the ps.gbp23 object to an RDS file
-saveRDS(ps.gbp23, file = "data/ps.gbp23.RDS")
+saveRDS(ps.gbp23, file = "data/ps.gbp23.0.01.RDS")
 

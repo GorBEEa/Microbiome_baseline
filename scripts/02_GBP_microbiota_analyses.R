@@ -23,7 +23,7 @@ library(patchwork) ; packageVersion("patchwork")
 library (dplyr) ; packageVersion("dplyr")
 
 # Load the phyloseq object
-ps.gbp23 <- readRDS("data/ps.gbp23.RDS")
+ps.gbp23 <- readRDS("data/ps.gbp23.0.01.RDS")
 print(ps.gbp23)
 
 #       1. Comparison between periods     ####
@@ -55,7 +55,6 @@ dend_cols <- as.character(sample_data_tab.cl$color_p[order.dendrogram(euc_dend)]
 labels_colors(euc_dend) <- dend_cols
 
 plot(euc_dend, ylab="VST Euc. dist.")
-
 
 # making our phyloseq object with transformed table
 vst_count_phy <- otu_table(vst_trans_count_tab, taxa_are_rows=T)
@@ -167,7 +166,6 @@ plot_ordination(vst_physeq_filt, vst_pcoa_filt, color="site") +
 
 
 #       3. Alpha diversity      ####
-
 
 ##      3.1. Rarefaction curves      ####
 rarecurve(t(count_tab.cl), step=100, col=sample_data_tab.cl$color_p, lwd=2, ylab="ASVs", label=F)
@@ -674,3 +672,8 @@ print(genus_composition_site_period)
 dev.off()
 
 ggsave("genus_composition_site_period.png", plot = genus_composition_site_period, width = 8, height = 6, units = "in", dpi = 300)
+
+
+
+
+

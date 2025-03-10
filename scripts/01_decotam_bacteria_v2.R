@@ -13,6 +13,7 @@
 library(decontam); packageVersion("decontam")
 library(phyloseq) ; packageVersion("phyloseq")
 library(ggplot2); packageVersion("ggplot2")
+library(Biostrings); packageVersion("Biostrings")
 library(gridExtra); packageVersion("gridExtra")
 
 # Load data
@@ -23,6 +24,8 @@ tax_tab <- as.matrix(read.table("data/dada2/2023_16S_GorBEEa_prj_ASVs_taxonomy.t
                                 row.names=1, check.names=F, sep="\t"))
 
 sample_info_tab <- read.delim("data/dada2/sample_info.tsv", header=T, row.names=1, check.names=F, sep="\t")
+
+fasta_seqs <- readDNAStringSet("data/dada2/2023_16S_GorBEEa_prj_ASVs.fa")
 
 # Setting the color column to be of type "character", which helps later
 sample_info_tab$color_p <- as.character(sample_info_tab$color_p)
@@ -80,12 +83,6 @@ combined_plot <- plot_grid(plot_list[[1]], plot_list[[2]], legend, ncol = 3, rel
 combined_plot
 
 ggsave("results/library_size_combined_plot.pdf", plot = combined_plot, device = "pdf", width = 8, height = 6, units = "in")
-
-
-# Save the plot
-ggsave("results/library_size_plot_combined.pdf", plot = combined_plot, device = "pdf", width = 10, height = 6, units = "in")
-
-
 
 
 ## 1.b) Identify Contaminants - Prevalence (Separated by Plate) ####
@@ -158,7 +155,19 @@ ps.nocont <- prune_taxa(!contamdf.prev$contaminant, physeq)
 # Create a phyloseq object with only contaminant ASVs
 ps.cont <- prune_taxa(contamdf.prev$contaminant, physeq)
 
-## 1.d) Remove Negative Controls from Final Dataset ####
+## 1.d) Remove contaminants from fasta file     ####
+contam_asvs <- taxa_names(ps.cont)  # Get the ASV IDs of contaminants from ps.cont
+# Extract the ASV IDs from the headers of the FASTA sequences
+fasta_ids <- sapply(names(fasta_seqs), function(x) strsplit(x, " ")[[1]][1])
+# Filter out the contaminant ASVs
+remaining_ids <- fasta_ids[!fasta_ids %in% contam_asvs]  # IDs to keep
+filtered_fasta <- fasta_seqs[which(fasta_ids %in% remaining_ids)]  # Keep only non-contaminant ASVs
+# Check the result
+length(filtered_fasta)  # Number of remaining sequences after filtering
+# Write the filtered sequences to a new FASTA file
+writeXStringSet(filtered_fasta, file = "data/2023_16S_GorBEEa_prj_ASVs_filt_c.0.01.fa")
+
+## 1.e) Remove Negative Controls from Final Dataset ####
 
 # Keep only true samples
 ps.gbp23 <- prune_samples(sample_data(ps.nocont)$type == "sample", ps.nocont)
@@ -168,4 +177,4 @@ table(sample_data(ps.nocont)$type)
 table(sample_data(ps.gbp23)$type)
 
 # Save the final cleaned phyloseq object
-saveRDS(ps.gbp23, file = "data/ps.gbp23.0.1.RDS")
+saveRDS(ps.gbp23, file = "data/ps.gbp23.c.0.01.RDS")
