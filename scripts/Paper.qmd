@@ -7,6 +7,12 @@ bibliography: references.bib
 
 ## Abstract
 
+Pollinators are essential for both natural ecosystems and agricultural systems, supporting the reproduction of over 85% of flowering plants and contributing to 75% of global food crops. However, global change drivers, such as climate change, habitat loss, pesticide use, and pollution, increasingly threaten pollinator populations. These stressors disrupt pollinator behavior, fragment their habitats, and introduce harmful chemicals, leading to declines in population numbers and cascading effects on ecosystems and human food security.
+
+One critical but understudied aspect of pollinator health is their microbiome. The microbiome, a community of microorganisms living within and on pollinators, plays a significant role in digestion, immune function, and disease resistance. In bees, the gut microbiome helps with nutrient absorption, detoxification, and pathogen defense. However, environmental changes and pesticide exposure can disrupt these microbial communities, compromising pollinator health and survival.
+
+Most research on pollinator microbiomes has focused on managed species like honeybees, leaving significant gaps in our understanding of wild pollinators. This study investigates the microbiome composition of the common carder bee (Bombus pascuorum) across different floral environments throughout the flowering season. By analyzing the gut microbiomes of these bees, we aim to uncover how environmental factors shape their microbial communities, providing crucial insights into their resilience and adaptability in the face of global change. This knowledge is essential for guiding conservation efforts to protect pollinator populations.
+
 ## Introduction
 
 Pollinators play a critical role in the functioning of both natural and agricultural systems worldwide, facilitating the reproduction of \>85% of flowering plants [@ollerton2011] and contributing to the production of \>75% of global food crops [@klein2006]. However, pollinators are increasingly at risk due to a multitude of global change drivers. Climate change, with its impacts on temperature and precipitation patterns, disrupts pollinator behaviors and/or morphologies [@miller-struttmann2015] leading to plant-pollinator mismatches [@gérard2020]. Habitat loss and fragmentation lead to a reduction in pollinator populations [@winfree2009], while the widespread use of pesticides introduce additional stresses [@guzman2024]. These factors, compounded by the spread of diseases [@manley2015] and the increasing presence of invasive species [@vanbergen2017], threaten the survival of pollinator populations, leading to cascading effects on ecosystems and human food systems [@devkota2024; @murphy2022]. A relatively unexplored yet crucial aspect of pollinator populations is their microbiome [@shah2024], the community of microorganisms living within and on them. The microbiome can significantly impact the health, physiology [@Engel2013], development, and survival [@ferguson2018] of organisms, influencing digestion, immune function, and disease resistance. In insect pollinators, the gut microbiome plays a vital role in nutrient absorption [@zheng2017; @zheng2019], detoxification of harmful substances [@engel2012], and protection against pathogens [@steele2021][@koch2011]. Disruptions to the microbiome, whether through environmental changes, pesticide exposure, or other stressors, can compromise these essential functions and lead to increased vulnerability and mortality [@maes2016]. Understanding the composition and functionality of microbiomes is therefore critical, not only for gaining insights into the biology and ecology of pollinator species but also for developing strategies to mitigate the adverse effects of global change drivers. Most research on pollinator microbiomes has focused on managed species, like honeybees [@engel2012] and certain bumblebee species [@weinhold2024], providing valuable insights into their gut microbial communities and how these microorganisms influence their health and productivity. However, our understanding of the microbiomes of other pollinator species, and particularly of wild species, remains limited (although see [@li2023] for a focus on other species). We know even less about how these microbiomes change over time or how different environmental factors shape them. Research in honeybees and some bumblebees has shown the existence of a core microbiome in these species, defined as a common group of microbes that are found across individuals of a given species (although the existence of this core microbiome is still somewhat controversial [@risely2020; @neu2021]). This core microbiome consists of around five genera in the case of honeybees [@carlini2024] and is mostly vertically-transmitted within the hive [@martinson2010]. In addition to this core microbiome, pollinators also acquire microbes from their environment, particularly through their diet [@ludvigsen2015], which can include nectar, pollen, and other floral resources. These acquired microorganisms can introduce new functions and adaptations but also make pollinators susceptible to environmental changes and stressors. Investigating the microbiomes of wild pollinators and their dynamics offers a promising avenue to understand their resilience and adaptability in the face of global change.
@@ -15,151 +21,26 @@ Here, we focus on understanding the microbiome composition and dynamics of a wil
 
 ## Methods
 
-\
-We gather samples of the common carder bee, Bombus pascuorum (L.) in 16 different sites of the Gorbeia Natural Park (​​[43.035°N 2.817°W](https://geohack.toolforge.org/geohack.php?pagename=Gorbeia_Natural_Park&params=43.035_N_2.817_W_type:landmark)) in the autonomous community of the Basque Country in Spain. The team was composed of four people that split every sampling day so that 2 points were studied simultaneously per field work day. The sampling period lasted from April to July 2023, during these four months every two weeks we will go across all the 16 sampling points and treat the samples in the lab, if the weather conditions allow. Going through all the sites was considered a round, having a total of 6 rounds by the end of the sampling period. Every field day a maximum of 5 B. pascourum (L.) were caught per site if possible. All samples were labeled and stored independently in 50 ml vials at -20ºC. Finally a total of 132 samples were caught throughout the season.
+Our study was conducted within Gorbeia Natural Park, a protected area located in the Basque Country in N Spain. The region is shaped by the Atlantic Ocean's influence, resulting in mild winters and summers, alongside high annual rainfall, averaging around 1300 mm. During the study period (April to July), the average temperatures range from 10°C to 17.5°C [@Pizarro2021]. The area's vegetation includes beech forests mixed with extensive conifer plantations. Additionally, there is a notable presence of shrubland and meadows, particularly in the rockier, steeper regions of the mountain [@Albizu2002COMPARACINDL].
 
-\
-Sample preparation
-
-All bumblebees samples were measured in the lab, two measurements were taken from each sample: total length and abdomen length. Guts were extracted using sterile forceps and stored in 96% alcohol until the DNA extraction. Bacterial, plant and fungi DNA was extracted following Macherey-Nagel NucleoSpin® 96 Soil protocol (2021) and were  amplified in duplicate using the DFD forward and ASDFAS reverse primers.
-
-**Bombus pascuorum microbiome**
-
-\
-
-To assess the Bombus pascuorum’s size and microbiome variation among sites and during the whole prolongation of the field season,  Bombus pascuorum individuals were caught using entomological nets every day in every site. A maximum of 5 individuals were caught per site if possible, those samples were caught at any possible moment and any worker could catch them. All catched individuals were stored individually in 50mL vials with an identification tag. Captured specimens were cold-anesthetized in cooler bags with ice packs and later stored in a freezer at -20ºC. 
-
-The total length and the abdomen length were measured for every individual before gut extraction. Guts were removed using sterile tweezers, forceps and precision dissecting micro scissors and stored in a 96% ethanol solution in individual 2ml vials for further analysis (until DNA extraction?). The remaining bumblebee tissues were kept in a -20ºC freezer for future studies. 
-
-\
-\
-
-Gut DNA extraction, amplification and sequencing
-
-\
-
-We characterized bacterial, plant and fungal samples inside the bumblebee guts with community metabarcoding. DNA was extracted following the NucleoSpin® (Macherey-Nagel, 2021) protocol and later amplified targeting 16S and ITS1or2? regions with specific primers. Illumina MIseq?
+Within the park, we selected 16 different sampling sites, all of them located at similar altitudes \~800 m a.s.l, which we sampled every two weeks depending on weather conditions, avoiding rainy, windy or foggy days. At every sampling date we aimed to collect at least 5 *B. pascuorum* individuals per day, although this was not always possible. All collected individuals were labeled and stored independently in 50 ml vials at -20ºC until processed in the laboratory. For each bumblebee specimen we measured the inter-tegular distance as a measure of body size (<https://www.jstor.org/stable/25084877>). We then extracted bumblebee guts using sterile forceps which we stored in 96% alcohol until the DNA extraction. Bacterial, plant and fungi DNA was extracted following Macherey-Nagel NucleoSpin® 96 Soil protocol (2021) and were  amplified in duplicate using the DFD forward and ASDFAS reverse primers.
 
 To avoid site and period vias all samples were randomized using a randomizer program before the DNA extraction, creating a new individual code for each sample.
 
-\
+DNA Extraction and PCR Amplification
 
-**DNA extraction protocol (Annex)**
+Each gut sample was placed in a separate 2 mL vial with ceramic beads, and the ethanol was allowed to evaporate. Once dry, 700 µL of Lysis Buffer (SL1) were added to each vial, and the samples were mechanically homogenized (1750 rpm for 1 min with 15 s pauses, repeated 5 times). Contaminants were removed via precipitation, followed by centrifugation at 11,000 × g for 2 minutes to eliminate foam. Next, 150 µL of Buffer SL3 were added to each sample, vortexed for 5 seconds, and incubated on ice at 0-4ºC for 5 minutes, followed by centrifugation at 11,000 × g for 1 minute.
 
-\
+The lysate was filtered using a square-well block and the NucleoSpin® Inhibitor Removal Plate. 550 µL of the clear supernatant was loaded into each well, and the plates were centrifuged at 2,250 × g for 13 minutes. The NucleoSpin® Inhibitor Removal Plate was discarded, and 250 µL of Buffer SB was added to the flow-through, mixed by pipetting.
 
-Each gut was placed in an independent 2mL vial containing ceramic beads and let the ethanol in the samples evaporate. Once the samples were dry from ethanol, 700uL of Lysis buffer (SL1) were added to each vial and mechanically homogenized them (Program settings: 1750 rpm - 1 min. shake and 15s stop, 5 times). 
+To bind the DNA, 725 µL of sample was transferred to a NucleoSpin® Soil Binding Plate and centrifuged at 2,250 × g for 13 minutes. The flow-through was discarded. DNA was washed in four steps: (1) 500 µL of Buffer SB, centrifuged at 2,250 × g for 13 minutes; (2) 550 µL of Buffer SW1, centrifuged at 2,250 × g for 5 minutes; (3) 700 µL of Buffer SW2, centrifuged at 2,250 × g for 5 minutes; (4) 700 µL of Buffer SW2, centrifuged at 2,250 × g for 13 minutes. After washing, the plate was incubated at 37ºC for 20 minutes to dry the silica membrane.
 
-The homogenized mixture was cleaned from contaminants using a precipitation method. The samples were centrifuged at 11,000 x g for 2 min to eliminate the foam caused by the detergent. 150uL of Buffer SL3 were added to each sample and vortexed for 5s. The samples were later put into crushed ice for 5 minutes for incubation at 0-4ºC. To then again centrifuge them at 11,000 x g for 1 min.
+DNA was eluted by adding 100 µL of Buffer SE to each well, incubating for 1 minute, and centrifuging at 2,250 × g for 5 minutes. A total of 132 samples were obtained, with each sample labeled accordingly. Nanodrop tests were performed on random samples to confirm successful DNA extraction.
 
-To filter the lysate, we used a square-well block and the NucleoSpin® Inhibitor Removal Plate 550uL of the clear supernatant were loaded to each well of the plate. The plates were centrifuged at 2,250 x g for 13 minutes and discarded the NucleoSpin® Inhibitor Removal Plate. To help adjust the binding conditions, we added 250uL Buffer SB to the flow-through in each well of the square-well block and mixed it pipetting up and down.
+PCR Amplification
 
-To achieve the binding of the DNA, in a new square-well block we placed the NucleoSpin® Soil Binding Plate and we loaded 725ul of sample on each well. We spined the samples at 2,250 x g for 13 minutes and discarded the flow-through. 
+DNA amplification was assessed using two-step PCR. Step 1 PCRs were performed for bacterial, plant, and fungal genetic material, with identical reagent volumes for all samples, differing only in the primers used (Table xxx). PCRs were run in a 96-well plate, with two plates for each group: one containing 96 samples and another with 40 samples, including negative controls. Step 1 PCR was repeated twice per sample, after which 7.5 µL from each replicate were pooled into a new plate, with 15 µL per well. PCR amplification success was confirmed via 2% agarose gel electrophoresis between Step 1 and Step 2 PCRs to verify amplicon size.
 
-To wash and dry the NucleoSpin® Soil Binding Plate we did 4 washes. 
+Results
 
-1st wash - We added 500 ul of Buffer SB to each well of the NucleoSpin® Soil Binding Plate and centrifuged it at 2,250 x g for 13 mins. Then we discarded the flow-through.
-
-2nd wash - We added 550ul of Buffer SW1 to each well of the NucleoSpin® Soil Binding Plate and centrifuged it at 2,250 x g for 5 mins. Then we discarded the flow-through. 
-
-3rd wash - We added 700ul of Buffer SW2 to each well of the NucleoSpin® Soil Binding Plate and centrifuged it at 2,250 x g for 5 mins. Then we discarded the flow-through.
-
-4th wash - We added 700ul of Buffer SW2 to each well of the NucleoSpin® Soil Binding Plate and centrifuged it at 2,250 x g for 13 mins. Then discarded the flow-trough.
-
-\
-
-To dry the silica membrane from the washes, we incubated the plate for 20 minutes at 37ºC. 
-
-Finally, to elute the DNA, we placed the NucleoSpin® Soil Binding Plate on an opened rack of Tube Strips and loaded 100ul of Buffer SE into the center of each well of the silica membrane of the NucleoSpin® Soil Binding Plate. We let it incubate for 1 minute and later centrifuged at 2,250 x g for 5 minutes. Each of the Tube Strips was labeled according to the sample number and contained 100ul of DNA. A total of 132 samples were obtained this way.
-
-To check that the DNA was successfully extracted from the samples, nanodrop tests were performed in random samples for each extraction batch. 
-
-\
-
-PCR conditions (Annex)
-
-\
-
-To assess the DNA amplification of the samples two step PCRs were performed (Step 1 and Step 2 PCR). Step 1 PCRs were performed for bacteria, plant and fungi genetic material. The volumes of the reagents and the DNA template used for the master mix were the same for all of the three sample types; the only difference was the specific primers used to amplify the desired genetic material (Table xxx). All PCRs were performed in a 96 well plate and were treated independently. For each group two plates were used, one containing 96 samples and another with the remaining 40 samples (this plates also include negative controls). 
-
-Step 1 PCR was performed twice for each sample and then the same samples were pooled together. 7.5uL of each of the same samples from the replicate plates were used to create a new plate containing 15uL on each of the sample wells. To check that the PCRs properly amplified the interest region a 2% agarose gel electrophoresis was performed between Step 1 and Step 2 PCRs, to verify the size of the desired amplicon.
-
-\
-
-Table xxx. Volume of each reagent used for the mastermix for one sample of the Step 1 PCR. Specific primers were used to amplify bateria, plant or fungi DNA.
-
-|                        |              |
-|------------------------|--------------|
-| Reagent                | Volume in uL |
-| 2X Buffer mix          | 7.5          |
-| MiliQ PCR grade (H2O)  | 4.18         |
-| Primer Forward (10 uM) | 0.6          |
-| Primer Reverse (10 uM) | 0.6          |
-| 3G KAPA (Polymerase)   | 0.12         |
-| DNA template           | 2            |
-| **Total volume**       | **15**       |
-
-\
-\
-
-The thermocycler protocol used for the Step 1 amplification was the following:
-
-Bacteria
-
-95ºC – 2min, 30 cycles of 95ºC – 20s, 53ºC – 20s, 72ºC – 30s; 72ºC final extension 5 min
-
-\
-
-Fungi and Plant (2 more cycles were added to increase the amount of amplicons in the samples due to low genetic material).
-
-95ºC – 2min, 32 cycles of 95ºC – 20s, 53ºC – 20s, 72ºC – 30s; 72ºC final extension 5 min
-
-\
-\
-\
-\
-
-Cleaning Step 
-
-\
-\
-
-Pooling step
-
-\
-
-To assess the pooling step, an isovolumetric pool was performed with the indexed samples. 5uL of each of the wells were used to combine it in the final library that was sent for sequencing. For the 96 sample well plates a total volume of the library was of 480 uL, while for the 40 sample well plates libraries the total volume consisted on 200 uL. Each of the plates were combined in a separate/independent microtube. For each of the treatments (bacteria, plant and fungi) one 96 sample and one 40 sample library were created; resulting in 6 microtubes with the final libraries. 
-
-```         
-Bacteria library: 96 samples (480uL) and 40 samples (200uL)
-
-Fungi library: 96 samples (480uL) and 40 samples (200uL)
-
-Plant library: 96 samples (480uL) and 40 samples (200uL)
-```
-
-\
-
-Data analysis
-
-\
-\
-\
-\
-\
-\
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
-```{r}
-1 + 1
-```
-
-You can add options to executable code like this
-
-```{r}
-#| echo: false
-2 * 2
-```
-
-The `echo: false` option disables the printing of code (only output is displayed).
+Finally a total of 132 samples were caught throughout the season.
