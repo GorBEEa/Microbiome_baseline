@@ -7,7 +7,7 @@ bibliography: references.bib
 
 ## Abstract
 
-Pollinators are essential for both natural ecosystems and agricultural systems, supporting the reproduction of over 85% of flowering plants and contributing to 75% of global food crops. However, global change drivers, such as climate change, habitat loss, pesticide use, and pollution, increasingly threaten pollinator populations. These stressors disrupt pollinator behavior, fragment their habitats, and introduce harmful chemicals, leading to declines in population numbers and cascading effects on ecosystems and human food security.
+Pollinators are essential for both natural and agricultural systems, supporting the reproduction of over 85% of flowering plants and contributing to 75% of global food crops. However, global change drivers, such as climate change, habitat loss, pesticide use, and pollution, increasingly threaten pollinator populations. These stressors disrupt pollinator behavior, fragment their habitats, and introduce harmful chemicals, leading to declines in population numbers and cascading effects on ecosystems and human food security.
 
 One critical but understudied aspect of pollinator health is their microbiome. The microbiome, a community of microorganisms living within and on pollinators, plays a significant role in digestion, immune function, and disease resistance. In bees, the gut microbiome helps with nutrient absorption, detoxification, and pathogen defense. However, environmental changes and pesticide exposure can disrupt these microbial communities, compromising pollinator health and survival.
 
