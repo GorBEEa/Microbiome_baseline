@@ -3,3 +3,9 @@
 .RData
 .Ruserdata
 .DS_Store
+
+# Ignore all .RDS files
+*.RDS
+
+# Ignore all .fa files
+*.fa

@@ -132,7 +132,7 @@ for (plate_id in unique(sample_data(physeq)$plate)) {
 }
 
 # Pick a threshold to filter contaminants
-Th <- 0.01  # Adjust as needed
+Th <- 0.5  # Adjust as needed
 
 # Merge contamination results across plates
 contam_combined <- rep(FALSE, ntaxa(physeq))
@@ -165,7 +165,7 @@ filtered_fasta <- fasta_seqs[which(fasta_ids %in% remaining_ids)]  # Keep only n
 # Check the result
 length(filtered_fasta)  # Number of remaining sequences after filtering
 # Write the filtered sequences to a new FASTA file
-writeXStringSet(filtered_fasta, file = "data/2023_16S_GorBEEa_prj_ASVs_filt_c.0.01.fa")
+writeXStringSet(filtered_fasta, file = "data/2023_16S_GorBEEa_prj_ASVs_filt_c.0.5.fa")
 
 ## 1.e) Remove Negative Controls from Final Dataset ####
 
@@ -177,4 +177,4 @@ table(sample_data(ps.nocont)$type)
 table(sample_data(ps.gbp23)$type)
 
 # Save the final cleaned phyloseq object
-saveRDS(ps.gbp23, file = "data/ps.gbp23.c.0.01.RDS")
+saveRDS(ps.gbp23, file = "data/ps.gbp23.c.0.5.RDS")
