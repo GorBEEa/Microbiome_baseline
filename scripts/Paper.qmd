@@ -39,12 +39,38 @@ DNA amplification was assessed using two-step PCR. Step 1 PCRs were performed fo
 
 *Statistical analyses*
 
-To evaluate the completeness of our surveys, we used the iNEXT package [@iNEXT], which provides robust estimates of species diversity and sampling coverage based on sample-size- and coverage-based rarefaction and extrapolation. We compared the observed sample coverage with the estimated asymptotic coverage to quantify the fraction of the community captured by our sampling efforts.
+To evaluate the completeness of our surveys, we used the iNEXT package [@iNEXT], which provides robust estimates of species diversity and sampling coverage based on sample-size- and coverage-based rarefaction and extrapolation. We compared the observed sample coverage with the estimated asymptotic coverage to quantify the fraction of the community captured by our sampling efforts. We analyzed community composition using Non-metric Multidimensional Scaling (NMDS) with the Bray-Curtis dissimilarity index, implemented in the vegan package in R [@vegan]. Species abundance data were square-root transformed to reduce the influence of dominant species. We then performed a Permutational Multivariate Analysis of Variance (PERMANOVA) with 999 permutations to assess significance. The time period in which the specimens were sampled was specified as the main factor.
 
 ## Results
 
-During the 2023 season, we collected a total of 132 bumblebee specimens.
+Throughout the flowering season, we collected a total of 132 bumblebee specimens across our 16 sites (XX+- individuals per site and period).
+
+Our results show that sampling completeness was XX%
+
+We find that bacterial diversity within bumblebee guts tends to slightly increase through time, although this relationship is not significant, probably due to our relatively low sample size.
+
+Bumblebee guts were characterized by a diverse group of bacteria, dominated by Gammaproteobacteria such as XX and XX, followed by Actinobacteria, Firmicutes and Cyanobacteria and including a relatively large proportion of unidentified specimens (X%).
+
+In terms of changes in composition through time, our results show that there is a constant group of bacterial components that consistently appear across all time periods (Fig. 4) and sites (Fig. SX), probably defining the species’ core microbiome and including ASVs in the genus Lactobacillus, Gilliamella, Snodgrassella and Bombiscardovia. We also find that towards the end of the sampling season, this core microbiome becomes complemented by other species belonging to genus like Pseudomonas, Bacillus, Commensalibacter or Apibacter.
+
+Our analysis of how the composition of the bacterial community changes through time shows a distinct grouping across the different time periods, with particular differences found between the earlier (dark blue) and later (yellow) time periods in their bacterial composition (Fig. 5).
+
+Our analysis of fungal communities…
 
 ## Discussion
+
+Our analysis of the microbial composition of wild bumblebee guts shows that
+
+Similar to other previous research looking at the composition of gut microbiomes in other bumblebee species, we find large differences throughout the flowering season (REF). Specifically, while bumblebees collected early in the season exhibit more depauperate patterns, featuring XX to XX ASVs, those captured later on in the season host a much more diverse microbial community (XXX to XXX). This seasonal shift suggests a progressive accumulation of microbial diversity, potentially driven by increased foraging activity, exposure to diverse floral resources, and interactions with other pollinators as the season advances. These findings highlight the dynamic nature of bumblebee gut microbiomes and underscore the importance of seasonal context when assessing microbial diversity and its ecological implications.
+
+Bumblebee guts were colonized by a diverse array of bacteria, with Gammaproteobacteria being the most abundant, followed by Actinobacteria, Firmicutes, and Cyanobacteria. Notably, we observed a considerable proportion of unidentified bacterial taxa (**X%**), reflecting both the complexity of microbial communities within pollinators and potential gaps in current taxonomic databases. This underlines the importance of continued exploration and sequencing efforts to fully characterize the microbial diversity associated with bumblebees.
+
+In terms of temporal shifts, our results indicate the persistence of a core group of bacterial taxa consistently present across all time points and sampling sites. This stable core microbiome, which includes Lactobacillus, Gilliamella, Snodgrassella, and Bombiscardovia, likely plays fundamental roles in host health, such as enhancing nutrient absorption, protecting against pathogens, and modulating immune responses (REF). The stability of this core community across both spatial and temporal scales suggests a strong host-microbe association that may be evolutionarily conserved.
+
+Interestingly, as the season progressed, the core microbiome was complemented by additional bacterial taxa, particularly species within the genera Pseudomonas, Bacillus, Commensalibacter, and Apibacter. This late-season diversification could be driven by changes in floral availability and composition, shifts in foraging behavior, or increased environmental exposure as colonies expand and worker bees travel farther distances (REF). These supplementary taxa may represent transient members of the microbiome that are acquired from specific floral resources or environmental sources, potentially enhancing metabolic capabilities or stress tolerance during the late foraging season.
+
+Our analysis revealed distinct temporal clustering of bacterial communities, with clear compositional differences between early and late time points. This temporal structuring suggests that the microbiome is not static but dynamically responds to seasonal changes in the environment. The early-season microbiome may be shaped by overwintering survival and the limited floral diversity available during initial foraging, while the late-season community reflects cumulative interactions with a broader spectrum of plant species. This shift may also be influenced by colony development stages, where increased colony size and worker numbers intensify environmental interactions.
+
+Together, these findings underscore the dynamic nature of bumblebee gut microbiomes and the role of seasonal changes in shaping microbial community structure. They also highlight the importance of considering both temporal and spatial variation when assessing microbiome stability and its implications for host health and ecosystem functioning. Future studies with larger sample sizes and finer temporal resolution would be valuable for disentangling the drivers of microbiome shifts and their potential consequences for pollinator health and resilience.
 
 ## References
