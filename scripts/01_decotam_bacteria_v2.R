@@ -15,6 +15,7 @@ library(phyloseq) ; packageVersion("phyloseq")
 library(ggplot2); packageVersion("ggplot2")
 library(Biostrings); packageVersion("Biostrings")
 library(gridExtra); packageVersion("gridExtra")
+library(cowplot); packageVersion("cowplot")
 
 # Load data
 count_tab <- read.table("data/dada2/2023_16S_GorBEEa_prj_ASVs_counts.tsv", header=T, row.names=1,
@@ -132,7 +133,7 @@ for (plate_id in unique(sample_data(physeq)$plate)) {
 }
 
 # Pick a threshold to filter contaminants
-Th <- 0.5  # Adjust as needed
+Th <- 0.1  # Adjust as needed
 
 # Merge contamination results across plates
 contam_combined <- rep(FALSE, ntaxa(physeq))
@@ -176,7 +177,8 @@ ps.gbp23 <- prune_samples(sample_data(ps.nocont)$type == "sample", ps.nocont)
 #Extract ASV count table and save it
 ASV_table <- otu_table(ps.gbp23)
 ASV_table <- as.data.frame(ASV_table)
-tsv_filename <- paste0("ASV_table_", Th, ".tsv")
+ASV_table <- cbind(ASV_ID = rownames(ASV_table), ASV_table)  # Convert row names to a column
+tsv_filename <- paste0("data/ASV_table_", Th, ".tsv")
 write.table(ASV_table, file = tsv_filename, sep = "\t", row.names = FALSE, quote = FALSE)
 
 # Check the number of samples before and after filtering
@@ -186,3 +188,61 @@ table(sample_data(ps.gbp23)$type)
 # Save the final cleaned phyloseq object
 rds_filename <- paste0("data/ps.gbp23_c.", Th, ".RDS")
 saveRDS(ps.gbp23, file = rds_filename)
+
+
+
+######################################
+
+# Función para calcular prevalencia
+prevalence_df <- function(ps) {
+  prevalence <- apply(otu_table(ps), 1, function(x) sum(x > 0))
+  abundance <- taxa_sums(ps)
+  data.frame(
+    Taxa = taxa_names(ps),
+    Prevalence = prevalence,
+    TotalAbundance = abundance
+  )
+}
+
+
+# Calcular para contaminantes
+df_contam <- prevalence_df(ps.cont)
+df_contam$Contaminant <- TRUE
+
+# Calcular para no contaminantes (si quieres comparar)
+df_nocont <- prevalence_df(ps.nocont)
+df_nocont$Contaminant <- FALSE
+
+# Combina los dos
+df_all <- rbind(df_contam, df_nocont)
+
+# Graficar
+ggplot(df_all, aes(x = Prevalence, y = TotalAbundance, color = Contaminant)) +
+  geom_point(alpha = 0.7) +
+  scale_y_log10() +
+  theme_minimal() +
+  labs(title = "Prevalencia vs Abundancia",
+       x = "Número de muestras con presencia (Prevalencia)",
+       y = "Abundancia total (log10)",
+       color = "Contaminante")
+
+phyloseq_prevalence_plot <- function(physeq, contaminant_vector) {
+  prevalence <- apply(otu_table(physeq), 1, function(x) sum(x > 0))
+  abundance <- taxa_sums(physeq)
+  data <- data.frame(
+    Taxa = taxa_names(physeq),
+    Prevalence = prevalence,
+    Abundance = abundance,
+    Contaminant = contaminant_vector
+  )
+  
+  ggplot(data, aes(x = Prevalence, y = Abundance, color = Contaminant)) +
+    geom_point(alpha = 0.7) +
+    scale_y_log10() +
+    theme_bw() +
+    labs(title = "Prevalencia y Abundancia de ASVs",
+         x = "Prevalencia (nº muestras)",
+         y = "Abundancia total (log10)")
+}
+
+phyloseq_prevalence_plot(physeq, contamdf.prev$contaminant)

@@ -122,13 +122,13 @@ for (threshold in names(results)) {
 }
 
 # Check each threshold individually:
-Th <- 0.01 # Replace by your value
+Th <- 0.5 # Replace by your value
 results[[as.character(Th)]]$contaminant_table
 results[[as.character(Th)]]$contaminant_ids
 head(results[[as.character(Th)]]$dataframe, n = 20)
 
 # Run with your selected threshold value
-contamdf.prev <- isContaminant(physeq, method="prevalence", neg="is.neg", threshold=0.01)
+contamdf.prev <- isContaminant(physeq, method="prevalence", neg="is.neg", threshold=0.5)
 table(contamdf.prev$contaminant)
 head(contamdf.prev, n=20)
 head(which(contamdf.prev$contaminant))
@@ -162,7 +162,7 @@ filtered_fasta <- fasta_seqs[which(fasta_ids %in% remaining_ids)]  # Keep only n
 # Check the result
 length(filtered_fasta)  # Number of remaining sequences after filtering
 # Write the filtered sequences to a new FASTA file
-writeXStringSet(filtered_fasta, file = "data/2023_16S_GorBEEa_prj_ASVs_filt_0.01.fa")
+writeXStringSet(filtered_fasta, file = "data/2023_16S_GorBEEa_prj_ASVs_filt_0.5.fa")
 
 ## 1.e) Remove negative controls from phyloseq object     ####
 
@@ -176,5 +176,5 @@ table(sample_data(ps.nocont)$type)
 table(sample_data(ps.gbp23)$type)
 
 # Save the ps.gbp23 object to an RDS file
-saveRDS(ps.gbp23, file = "data/ps.gbp23.0.01.RDS")
+saveRDS(ps.gbp23, file = "data/ps.gbp23.0.5.RDS")
 
