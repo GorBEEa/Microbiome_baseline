@@ -9,3 +9,6 @@
 
 # Ignore all .fa files
 *.fa
+
+# Ignore PICRUSt2 folder
+data/PICRUSt2*/
