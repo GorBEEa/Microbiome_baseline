@@ -1,1 +1,1 @@
-# picrust2 analyses
+# PICRUSt2 analyses

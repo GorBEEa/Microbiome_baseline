@@ -21,9 +21,10 @@ library(viridis) ; packageVersion("viridis")
 library(patchwork) ; packageVersion("patchwork")
 library (dplyr) ; packageVersion("dplyr")
 library(wesanderson); packageVersion("wesanderson")
+library(writexl)
 
 # Load the phyloseq object
-ps.gbp23 <- readRDS("data/ps.gbp23.0.5.RDS")
+ps.gbp23 <- readRDS("data/ps.gbp23_c.0.1.RDS")
 print(ps.gbp23)
 
 # From the phyloseq contaminant-free file
@@ -48,6 +49,20 @@ print(ps.gbp23)
 
 # Extract again sample_data with the new information
 sample_data_tab.cl <- as(sample_data(ps.gbp23), "data.frame")
+
+# Perhaps the metadata information it's better to include in the previous script:
+
+sample_data_export <- sample_data_tab.cl %>%
+  rownames_to_column(var = "SampleID") %>%
+  relocate(SampleID, .before = everything())
+
+writexl::write_xlsx(sample_data_export, path = "data/Bombus_2024_metadata.xlsx")
+
+write.table(sample_data_export, 
+            file = paste0("data/Bombus_2024_metadata.txt"), 
+            sep = "\t",           # tab delimiter
+            quote = FALSE,        # no quotes around values
+            row.names = FALSE) 
 
 #       1. Comparison between periods     ####
 
@@ -616,7 +631,10 @@ genus_composition_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = Abund
   geom_text(data = sample_counts, aes(x = period, y = 0, label = paste("n=", n_samples)), 
             inherit.aes = FALSE, vjust = 1.5, size = 3, color = "black") +
   # Remove x axis title
-  theme(axis.title.x = element_blank()) + 
+  theme(axis.title.x = element_blank(),
+  legend.position = "none"  # Oculta la leyenda
+  #legend.text = element_text(face = "italic", size=10)  
+) + 
   #
   guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
   ylab("Relative Abundance (Genus > 5%) \n") +

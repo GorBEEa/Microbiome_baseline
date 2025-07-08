@@ -561,7 +561,10 @@ genus_composition_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = Abund
   geom_text(data = sample_counts, aes(x = period, y = 0, label = paste("n=", n_samples)), 
             inherit.aes = FALSE, vjust = 1.5, size = 3, color = "black") +
   # Remove x axis title
-  theme(axis.title.x = element_blank()) + 
+  theme(axis.title.x = element_blank(),
+  legend.position = "none"  # Oculta la leyenda
+  # legend.text = element_text(face = "italic", size=10)  
+) + 
   #
   guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
   ylab("Relative Abundance (Genus > 20%) \n") +
