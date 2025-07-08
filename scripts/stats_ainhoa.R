@@ -145,14 +145,23 @@ ggplot(merged_df, aes(x = site, y = Observed)) +
 # library(RColorBrewer)
 # pal<- brewer.pal(n = 6, name = "Set2")
 pal <- c("#3A9AB2", "#91BAB6", "#BDC881", "#E3B710", "#EC7A05", "#F11B00")
-ggplot(merged_df, aes(x = period, y = Observed, fill = period)) +
+p1 <- ggplot(merged_df, aes(x = period, y = Observed, fill = period)) +
   geom_violin(alpha = 0.8, trim = FALSE) +
   geom_boxplot(width = 0.1, outlier.shape = NA, alpha = 0.7) +
   scale_fill_manual(values = pal) +
   theme_minimal() +
   labs(x = "Period", y = "Diversity") +
   facet_wrap(~Diversity, scales = "free_y")
+p1
 
+# Save the plot
+ggsave(
+  "results/violin_plot_diversity_period.png",
+  plot = p1,
+  width = 8,
+  height = 5,
+  dpi = 400
+)
 
 ggplot(merged_df, aes(x = site, y = Observed, fill = site)) +
   geom_violin(alpha = 0.8, trim = FALSE) +
@@ -473,8 +482,9 @@ community_matrix <- long_df_comp_sum %>%
   )
 
 # Step 3: Set rownames to Sample
+library(tibble)
 community_matrix <- community_matrix %>%
-  column_to_rownames("Sample")
+  tibble::column_to_rownames("Sample")
 
 
 library(vegan)
@@ -485,7 +495,7 @@ nmds_result <- metaMDS(community_matrix, distance = "bray", k = 2, trymax = 100)
 # Step 5: Add metadata (e.g., period)
 metadata <- sample_data_tab.cl %>%
   filter(Sample %in% rownames(community_matrix)) %>%
-  column_to_rownames("Sample")
+  tibble::column_to_rownames("Sample")
 
 # Step 6: PERMANOVA
 
@@ -518,11 +528,28 @@ library(ggplot2)
 # Your custom palette
 pal <- c("#3A9AB2", "#91BAB6", "#BDC881", "#E3B710", "#EC7A05", "#F11B00")
 
-ggplot(nmds_df, aes(x = NMDS1, y = NMDS2, color = period)) +
+p2 <- ggplot(nmds_df, aes(x = NMDS1, y = NMDS2, color = period)) +
   geom_point(size = 3, alpha = 0.8) +
   scale_color_manual(values = pal) +
   labs(title = "NMDS of ASV Composition", color = "Period") +
   theme_minimal(base_size = 14)
+
+p2
+# Save the plot
+ggsave("results/nmds.png", plot = p2, width = 8, height = 5, dpi = 400)
+
+#remove outliers
+nmds_df_sub <- subset(nmds_df, nmds_df$NMDS1 > -1.5)
+
+p3 <- ggplot(nmds_df_sub, aes(x = NMDS1, y = NMDS2, color = period)) +
+  geom_point(size = 3, alpha = 0.8) +
+  scale_color_manual(values = pal) +
+  labs(title = "NMDS of ASV Composition", color = "Period") +
+  theme_minimal(base_size = 14)
+p3
+
+# Save the plot
+ggsave("results/nmds_subset.png", plot = p3, width = 8, height = 5, dpi = 400)
 
 
 ggplot(nmds_df, aes(x = NMDS1, y = NMDS2, color = site)) +
@@ -597,21 +624,41 @@ merged_df_fl <- left_join(merged_df, df_fl5, by = "j")
 
 pal <- c("#3A9AB2", "#91BAB6", "#BDC881", "#E3B710", "#EC7A05", "#F11B00")
 
-ggplot(merged_df_fl, aes(x = n_plants, y = Observed)) +
+p4 <- ggplot(merged_df_fl, aes(x = n_plants, y = Observed)) +
   geom_point(aes(color = period)) +
   geom_smooth(method = "lm", color = "black") + # single line, not per period
   facet_wrap(~Diversity, scales = "free_y") +
   scale_color_manual(values = pal) +
+  xlab("Plant species richness") +
+  ylab("Observed ASV diversity/richness") +
   theme_minimal()
+
+p4
+ggsave(
+  "results/flower_richness.png",
+  plot = p4,
+  width = 8,
+  height = 5,
+  dpi = 400
+)
 
 
 ggplot(merged_df_fl, aes(x = n_plants, y = Observed)) +
   geom_point(aes(color = site)) +
   geom_smooth(method = "lm", color = "black") + # single line, not per period
   facet_wrap(~Diversity, scales = "free_y") +
+  xlab("Plant species richness") +
+  ylab("Observed ASV diversity/richness") +
   # scale_color_manual(values = pal) +
   theme_minimal()
 
+ggsave(
+  "results/flower_richness.png",
+  plot = p4,
+  width = 8,
+  height = 5,
+  dpi = 400
+)
 
 library(dplyr)
 
