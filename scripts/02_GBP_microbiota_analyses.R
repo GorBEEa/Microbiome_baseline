@@ -21,6 +21,7 @@ library(viridis) ; packageVersion("viridis")
 library(patchwork) ; packageVersion("patchwork")
 library (dplyr) ; packageVersion("dplyr")
 library(wesanderson); packageVersion("wesanderson")
+library(pairwiseAdonis)
 library(writexl)
 
 # Load the phyloseq object
@@ -104,10 +105,10 @@ plot_ordination(vst_physeq, vst_pcoa, color="period") +
   theme_bw() + theme(legend.position="none")
 
 # We identify some outliers
-
 outliers <- c("GBP23040402M_16S_B48", "GBP23040401M_16S_B96", "GBP23021602M_16S_B96")
 # Remove the outliers from the phyloseq object
 vst_physeq_filt <- prune_samples(!(sample_names(vst_physeq) %in% outliers), vst_physeq)
+
 # Recalculate PCoA
 vst_pcoa_filt <- ordinate(vst_physeq_filt, method="MDS", distance="euclidean")
 eigen_vals_filt <- vst_pcoa_filt$values$Eigenvalues
@@ -120,7 +121,7 @@ plot_ordination(vst_physeq_filt, vst_pcoa_filt, color="period") +
   theme_bw() + theme(legend.position="none")
 
 # Plot without sample names
-plot_ordination(vst_physeq_filt, vst_pcoa_filt, color="period") + 
+PCoA_period <- plot_ordination(vst_physeq_filt, vst_pcoa_filt, color="period") + 
   geom_point(size=1) + 
   labs(col="period") + 
   coord_fixed(sqrt(eigen_vals_filt[2]/eigen_vals_filt[1])) + 
@@ -128,6 +129,43 @@ plot_ordination(vst_physeq_filt, vst_pcoa_filt, color="period") +
   scale_color_manual(values=unique(sample_data_tab.cl$color_p[order(sample_data_tab.cl$period)])) + 
   theme_bw() + 
   theme(legend.position="none")
+
+ggsave(glue("results/PCoA_bacteria_16S_period.png"), plot = PCoA_period, width = 8, height = 6, units = "in", dpi = 300)
+
+# Create Euclidean distance matrix after filtering outliers
+vst_tab_filt <- as(otu_table(vst_physeq_filt), "matrix")
+euc_dist_filt <- dist(t(vst_tab_filt))  # Transpose to have samples in rows
+
+# Corresponding sample data
+sample_data_filt <- as(sample_data(vst_physeq_filt), "data.frame")
+
+# PERMANOVA
+permanova_result <- adonis2(euc_dist_filt ~ period, data = sample_data_filt)
+print(permanova_result)
+
+
+
+
+
+# Recalculate variance explained for labeling
+variance_explained <- round(100 * eigen_vals_filt / sum(eigen_vals_filt), 1)
+
+# Plot with ellipses
+PCoA_ellipses <- plot_ordination(vst_physeq_filt, vst_pcoa_filt, color = "period") +
+  geom_point(size = 2, alpha = 0.8) +
+  stat_ellipse(type = "t", linetype = 1, size = 0.6) +  # Confidence ellipses
+  labs(
+    color = "Period",
+    x = paste0("PCoA1 (", variance_explained[1], "%)"),
+    y = paste0("PCoA2 (", variance_explained[2], "%)")
+  ) +
+  scale_color_manual(values = unique(sample_data_tab.cl$color_p[order(sample_data_tab.cl$period)])) +
+  ggtitle("PCoA of Bacterial Communities by Period") +
+  theme_bw()
+
+# View
+print(PCoA_ellipses)
+
 
 #       2. Comparison between sites            ####
 
@@ -182,6 +220,7 @@ plot_ordination(vst_physeq, vst_pcoa, color="category") +
 outliers <- c("GBP23040402M_16S_B48", "GBP23040401M_16S_B96", "GBP23021602M_16S_B96")
 # Remove the outliers from the phyloseq object
 vst_physeq_filt <- prune_samples(!(sample_names(vst_physeq) %in% outliers), vst_physeq)
+
 # Recalculate PCoA
 vst_pcoa_filt <- ordinate(vst_physeq_filt, method="MDS", distance="euclidean")
 eigen_vals_filt <- vst_pcoa_filt$values$Eigenvalues
@@ -194,7 +233,7 @@ plot_ordination(vst_physeq_filt, vst_pcoa_filt, color="category") +
   theme_bw() + theme(legend.position="none")
 
 # Plot without sample names
-plot_ordination(vst_physeq_filt, vst_pcoa_filt, color="category") + 
+PCoA_site <- plot_ordination(vst_physeq_filt, vst_pcoa_filt, color="category") + 
   geom_point(size=1) + labs(col="category") + 
   coord_fixed(sqrt(eigen_vals_filt[2]/eigen_vals_filt[1])) + ggtitle("PCoA") + 
   scale_color_manual(values=category_colors) + 
@@ -236,11 +275,23 @@ period_richness <- plot_richness(ps.gbp23, x="period", color="period", measures=
 
 period_richness + scale_fill_manual(values=c("#440154FF","#414487FF","#2A788EFF","#22A884FF","#7AD151FF","#FDE725FF","red"))
 
+
+plot_richness(ps.gbp23, color="period", measures=c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "Fisher")) + 
+  scale_color_manual(values=unique(sample_data_tab.cl$color_p[order(sample_data_tab.cl$period)])) +
+  theme_bw() + theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+period_richness_all <- plot_richness(ps.gbp23, x="period", color="period", measures=c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "Fisher")) + 
+  scale_color_manual(values=unique(sample_data_tab.cl$color_p[order(sample_data_tab.cl$period)])) +
+  theme_bw() + theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  geom_violin() + geom_jitter(height = 0, width = 0.1)
+
+
+
+
 site_richness <- plot_richness(ps.gbp23, x="category", color="category", measures=c("Chao1", "Shannon")) + 
   scale_color_manual(values=category_colors) +
   theme_bw() + 
   theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
-
 
 #site_richness <- plot_richness(ps.gbp23, x="site", color="site", measures=c("Chao1", "Shannon")) + 
 #  scale_color_manual(values=unique(sample_data_tab.cl$color_s[order(sample_data_tab.cl$site)])) +
@@ -632,8 +683,8 @@ genus_composition_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = Abund
             inherit.aes = FALSE, vjust = 1.5, size = 3, color = "black") +
   # Remove x axis title
   theme(axis.title.x = element_blank(),
-  legend.position = "none"  # Oculta la leyenda
-  #legend.text = element_text(face = "italic", size=10)  
+  #legend.position = "none"  # Oculta la leyenda
+  legend.text = element_text(face = "italic", size=10)  
 ) + 
   #
   guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
