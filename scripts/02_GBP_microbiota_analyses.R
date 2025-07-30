@@ -167,9 +167,76 @@ PCoA_ellipses <- plot_ordination(vst_physeq_filt, vst_pcoa_filt, color = "period
 print(PCoA_ellipses)
 
 
-#       2. Comparison between sites            ####
+#       2.1 Comparison between sites            ####
 
 deseq_counts <- DESeqDataSetFromMatrix(count_tab.cl, colData = sample_data_tab.cl, design = ~site) 
+deseq_counts_vst <- varianceStabilizingTransformation(deseq_counts)
+vst_trans_count_tab <- assay(deseq_counts_vst)
+euc_dist <- dist(t(vst_trans_count_tab))
+
+# Hierarchical clustering for 
+euc_clust <- hclust(euc_dist, method="ward.D2")
+
+# hclust objects like this can be plotted with the generic plot() function
+plot(euc_clust) 
+# but i like to change them to dendrograms for two reasons:
+# 1) it's easier to color the dendrogram plot by groups
+# 2) if wanted you can rotate clusters with the rotate() 
+#    function of the dendextend package
+
+euc_dend <- as.dendrogram(euc_clust, hang=0.1)
+dend_cols <- as.character(sample_data_tab.cl$color_s[order.dendrogram(euc_dend)])
+labels_colors(euc_dend) <- dend_cols
+
+plot(euc_dend, ylab="VST Euc. dist.")
+
+# making our phyloseq object with transformed table
+vst_count_phy <- otu_table(vst_trans_count_tab, taxa_are_rows=T)
+sample_info_tab_phy <- sample_data(sample_data_tab.cl)
+vst_physeq <- phyloseq(vst_count_phy, sample_info_tab_phy)
+
+# generating and visualizing the PCoA with phyloseq
+vst_pcoa <- ordinate(vst_physeq, method="MDS", distance="euclidean")
+eigen_vals <- vst_pcoa$values$Eigenvalues # allows us to scale the axes according to their magnitude of separating apart the samples
+
+plot_ordination(vst_physeq, vst_pcoa, color="site") + 
+  geom_point(size=1) + labs(col="site") + 
+  geom_text(aes(label=rownames(sample_data_tab.cl), hjust=0.3, vjust=-0.4)) + 
+  coord_fixed(sqrt(eigen_vals[2]/eigen_vals[1])) + ggtitle("PCoA") + 
+  scale_color_manual(values=unique(sample_data_tab.cl$color_s[order(sample_data_tab.cl$site)])) +
+  theme_bw() + theme(legend.position="none")
+
+# We identify some outliers
+
+outliers <- c("GBP23040402M_16S_B48", "GBP23040401M_16S_B96", "GBP23021602M_16S_B96")
+# Remove the outliers from the phyloseq object
+vst_physeq_filt <- prune_samples(!(sample_names(vst_physeq) %in% outliers), vst_physeq)
+
+# Recalculate PCoA
+vst_pcoa_filt <- ordinate(vst_physeq_filt, method="MDS", distance="euclidean")
+eigen_vals_filt <- vst_pcoa_filt$values$Eigenvalues
+
+plot_ordination(vst_physeq_filt, vst_pcoa_filt, color="site") + 
+  geom_point(size=1) + labs(col="site") + 
+  geom_text(aes(label=rownames(sample_data(vst_physeq_filt)), hjust=0.3, vjust=-0.4)) + 
+  coord_fixed(sqrt(eigen_vals_filt[2]/eigen_vals_filt[1])) + ggtitle("PCoA") + 
+  scale_color_manual(values=unique(sample_data_tab.cl$color_s[order(sample_data_tab.cl$site)])) + 
+  theme_bw() + theme(legend.position="none")
+
+# Plot without sample names
+PCoA_site <- plot_ordination(vst_physeq_filt, vst_pcoa_filt, color="site") + 
+  geom_point(size=1) + 
+  labs(col="site") + 
+  coord_fixed(sqrt(eigen_vals_filt[2]/eigen_vals_filt[1])) + 
+  ggtitle("PCoA") + 
+  scale_color_manual(values=unique(sample_data_tab.cl$color_s[order(sample_data_tab.cl$site)])) + 
+  theme_bw() + 
+  theme(legend.position="none")
+
+
+#       2.2 Comparison between flower category sites           ####
+
+deseq_counts <- DESeqDataSetFromMatrix(count_tab.cl, colData = sample_data_tab.cl, design = ~category) 
 deseq_counts_vst <- varianceStabilizingTransformation(deseq_counts)
 vst_trans_count_tab <- assay(deseq_counts_vst)
 euc_dist <- dist(t(vst_trans_count_tab))
@@ -192,10 +259,6 @@ dend_cols <- category_colors[sample_data_tab.cl$category[order.dendrogram(euc_de
 euc_dend <- as.dendrogram(euc_clust, hang=0.1)
 # Assign the colors to the labels
 labels_colors(euc_dend) <- dend_cols
-
-#euc_dend <- as.dendrogram(euc_clust, hang=0.1)
-#dend_cols <- as.character(sample_data_tab.cl$color_s[order.dendrogram(euc_dend)])
-#labels_colors(euc_dend) <- dend_cols
 
 plot(euc_dend, ylab="VST Euc. dist.")
 
@@ -233,7 +296,7 @@ plot_ordination(vst_physeq_filt, vst_pcoa_filt, color="category") +
   theme_bw() + theme(legend.position="none")
 
 # Plot without sample names
-PCoA_site <- plot_ordination(vst_physeq_filt, vst_pcoa_filt, color="category") + 
+PCoA_flower_cat <- plot_ordination(vst_physeq_filt, vst_pcoa_filt, color="category") + 
   geom_point(size=1) + labs(col="category") + 
   coord_fixed(sqrt(eigen_vals_filt[2]/eigen_vals_filt[1])) + ggtitle("PCoA") + 
   scale_color_manual(values=category_colors) + 
@@ -251,10 +314,10 @@ abline(v=(min(rowSums(t(count_tab.cl)))))
 
 ################################## Perhaps not neccessary
 # first we need to create a phyloseq object using our un-transformed count table
-count_tab_phy <- otu_table(count_tab.cl, taxa_are_rows=T)
-tax_tab_phy <- tax_table(tax_table.cl)
+#count_tab_phy <- otu_table(count_tab.cl, taxa_are_rows=T)
+#tax_tab_phy <- tax_table(tax_table.cl)
 
-ASV_physeq <- phyloseq(count_tab_phy, tax_tab_phy, sample_info_tab_phy)
+#ASV_physeq <- phyloseq(count_tab_phy, tax_tab_phy, sample_info_tab_phy)
 
 
 
@@ -285,35 +348,48 @@ period_richness_all <- plot_richness(ps.gbp23, x="period", color="period", measu
   theme_bw() + theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   geom_violin() + geom_jitter(height = 0, width = 0.1)
 
+plot(period_richness_all)
 
 
+site_richness <- plot_richness(ps.gbp23, x="site", color="site", measures=c("Chao1", "Shannon")) + 
+  scale_color_manual(values=unique(sample_data_tab.cl$color_s[order(sample_data_tab.cl$site)])) +
+  theme_bw() + theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
-site_richness <- plot_richness(ps.gbp23, x="category", color="category", measures=c("Chao1", "Shannon")) + 
+plot(site_richness)
+site_richness + geom_violin() + geom_jitter(height = 0, width = 0.1)
+
+
+flower_cat_richness <- plot_richness(ps.gbp23, x="category", color="category", measures=c("Chao1", "Shannon")) + 
   scale_color_manual(values=category_colors) +
   theme_bw() + 
   theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
-#site_richness <- plot_richness(ps.gbp23, x="site", color="site", measures=c("Chao1", "Shannon")) + 
-#  scale_color_manual(values=unique(sample_data_tab.cl$color_s[order(sample_data_tab.cl$site)])) +
-#  theme_bw() + theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
-
-site_richness + geom_violin() + geom_jitter(height = 0, width = 0.1)
+plot(flower_cat_richness)
+flower_cat_richness + geom_violin() + geom_jitter(height = 0, width = 0.1)
 
 
 # Statistical comparisons
 
 # Estimate richness (Chao1 and Shannon index) by using phyloseq
 richness_data <- estimate_richness(ps.gbp23, measures = c("Chao1", "Shannon"))
-# Add period and site metadata
+# Add period, site and category metadata
 richness_data$period <- sample_data(ps.gbp23)$period
+richness_data$site <- sample_data(ps.gbp23)$site
 richness_data$category <- sample_data(ps.gbp23)$category
 
 # Shapiro-Wilk normality test
 shapiro.test(richness_data$Shannon)
 shapiro.test(richness_data$Chao1)
 
+# data:  richness_data$Shannon
+#W = 0.97655, p-value = 0.02641 -> No normal
+# data:  richness_data$Chao1
+#W = 0.91145, p-value = 4.268e-07 -> No normal
+
 # Define our custom color palette
 viridis_palette <- c("#440154FF", "#414487FF", "#2A788EFF", "#22A884FF", "#7AD151FF", "#FDE725FF")
+
+magma_palette <- magma(16, direction = 1)
 
 
 plt1 <- ggbetweenstats(data = richness_data, x = period, y = Chao1, type = "nonparametric"
@@ -326,28 +402,32 @@ plt2 <-ggbetweenstats(data = richness_data, x = period, y = Shannon, type = "non
   scale_color_manual(values = viridis_palette) +
   scale_fill_manual(values = viridis_palette)
 
-plt3 <- ggbetweenstats(data = richness_data, x = category, y = Chao1, type = "nonparametric",
+plt3 <- ggbetweenstats(data = richness_data, x = site, y = Chao1, type = "nonparametric"
+) +
+  scale_color_manual(values = magma_palette) +
+  scale_fill_manual(values = magma_palette)
+
+plt4 <-ggbetweenstats(data = richness_data, x = site, y = Shannon, type = "nonparametric"
+) +
+  scale_color_manual(values = magma_palette) +
+  scale_fill_manual(values = magma_palette)
+
+plt5 <- ggbetweenstats(data = richness_data, x = category, y = Chao1, type = "nonparametric",
                        package = "colorBlindness",
                        palette = "Blue2DarkOrange18Steps",
 )
 
-plt4 <- ggbetweenstats(data = richness_data, x = category, y = Shannon, type = "nonparametric",
+plt6 <- ggbetweenstats(data = richness_data, x = category, y = Shannon, type = "nonparametric",
                        package = "colorBlindness",
                        palette = "Blue2DarkOrange18Steps",
 )
 
-combined_plot <- (plt1 + plt2) / (plt3 + plt4)
+combined_plot <- (plt1 + plt2) / (plt3 + plt4) / (plt5 + plt6)
 combined_plot
 
 # Not significant difference between periods and sites.
 
 ##      3.3. TAXONOMIC SUMMARIES      ####
-
-
-#ps.gbp23
-#sample_data_tab.cl
-#tax_table.cl
-#count_tab.cl
 
 # using phyloseq to make a count table that has summed all ASVs
 # that were in the same phylum
@@ -472,6 +552,24 @@ sample_info_for_merge<-data.frame("Sample"=row.names(sample_info_tab_phy), "peri
 # (this is an awesome function!)
 filt_major_taxa_proportions_tab_for_plot.g2 <- merge(filt_major_taxa_proportions_tab_for_plot.g, sample_info_for_merge)
 
+# Define the order to Alphaproteobacteria y Gammaproteobacteria from Proteobacteria Phylym appear together
+new_order <- c(
+  "Actinobacteriota",
+  "Bacteroidota",
+  "Cyanobacteria",
+  "Firmicutes",
+  "Alphaproteobacteria",
+  "Gammaproteobacteria",
+  "Other",
+  "Unclassified"
+)
+
+# Convert Major_Taxa to a factor with the specified order
+filt_major_taxa_proportions_tab_for_plot.g2$Major_Taxa <- factor(
+  filt_major_taxa_proportions_tab_for_plot.g2$Major_Taxa,
+  levels = new_order
+)
+
 # and now we're ready to make some summary figures with our wonderfully
 # constructed table
 
@@ -563,7 +661,10 @@ plot_ordination(ASV_physeq.prop, ord.nmds.bray, color="period", title="Bray NMDS
 top20 <- names(sort(taxa_sums(ps.gbp23), decreasing=TRUE))[1:20]
 ASV_physeq.top20 <- transform_sample_counts(ps.gbp23, function(OTU) OTU/sum(OTU))
 ASV_physeq.top20 <- prune_taxa(top20, ASV_physeq.top20)
-plot_bar(ASV_physeq.top20, x="period", fill="Genus") #+ facet_wrap(~When, scales="free_x")
+plot_bar(ASV_physeq.top20, x="period", fill="Genus") +
+  theme(
+  legend.text = element_text(face = "italic")
+)
 
 # Now we will filter out Eukaryotes, Archaea, chloroplasts and mitochondria, because we only intended to amplify bacterial sequences
 ASV_physeq.NW.Bact <- ps.gbp23 %>%
@@ -649,9 +750,11 @@ genus_composition_indv <- ggplot(GorBEEa_2023_genus, aes(x = Sample, y = Abundan
   #scale_fill_viridis_d(option = "viridis") + # I do not recommend this color palette for many genera
   scale_fill_manual(values =genera_colors) + # Color palette customized for this dataset and 0.05 value
   # Remove x axis title
-  theme(axis.title.x = element_blank()) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 6)) +
-  #
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 6),
+    legend.text = element_text(face = "italic")
+  ) +
   guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
   ylab("Relative Abundance (Genus > 5%) \n") +
   ggtitle("Genus Composition of GorBEEa \n Bacterial Communities by specimen")
@@ -661,11 +764,11 @@ plot(genus_composition_indv)
 
 ### LJ: I cannot save good figures in pdf
 
-jpeg(filename = "genus_composition_indv.jpeg", width = 800, height = 600, quality = 100)
-print(genus_composition_indv)
-dev.off()
+#jpeg(filename = "genus_composition_indv.jpeg", width = 800, height = 600, quality = 100)
+#print(genus_composition_indv)
+#dev.off()
 
-ggsave("/Users/luisja/Downloads/genus_composition_indv.png", plot = genus_composition_period, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("results/bacteria_genus_composition_indv.png", plot = genus_composition_period, width = 8, height = 6, units = "in", dpi = 300)
 
 ###
 ###     Group by periods
@@ -695,14 +798,14 @@ plot(genus_composition_period)
 
 ### LJ: I cannot save good figures in pdf
 
-jpeg(filename = "genus_composition_period.jpeg", width = 800, height = 600, quality = 100)
-print(genus_composition_period)
-dev.off()
+#jpeg(filename = "genus_composition_period.jpeg", width = 800, height = 600, quality = 100)
+#print(genus_composition_period)
+#dev.off()
 
-ggsave("/Users/luisja/Downloads/genus_composition_period.pdf", plot = genus_composition_period, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("results/bacteria_genus_composition_period.pdf", plot = genus_composition_period, width = 8, height = 6, units = "in", dpi = 300)
 
 ###
-###   Relative Abundance by site category
+###   Relative Abundance by flower abundance category
 ###
 
 # Calcular el número de muestras por 'category'
@@ -729,14 +832,14 @@ plot(genus_composition_site)
 
 ### LJ: I cannot save good figures in pdf
 
-jpeg(filename = "genus_composition_site.jpeg", width = 800, height = 600, quality = 100)
-print(genus_composition_site)
-dev.off()
+#jpeg(filename = "genus_composition_site.jpeg", width = 800, height = 600, quality = 100)
+#print(genus_composition_site)
+#dev.off()
 
-ggsave("genus_composition_site.png", plot = genus_composition_site, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("results/bacteria_genus_composition_site.png", plot = genus_composition_site, width = 8, height = 6, units = "in", dpi = 300)
 
 
-### Group by site and period
+### Group by flower abundacne and period
 # Calculate samples per site category and period
 
 sample_counts <- GorBEEa_2023_genus %>%
@@ -761,8 +864,8 @@ plot(genus_composition_site_period)
 
 ### LJ: I cannot save good figures in pdf
 
-jpeg(filename = "genus_composition_site_period.jpeg", width = 800, height = 600, quality = 100)
-print(genus_composition_site_period)
-dev.off()
+#jpeg(filename = "genus_composition_site_period.jpeg", width = 800, height = 600, quality = 100)
+#print(genus_composition_site_period)
+#dev.off()
 
-ggsave("genus_composition_site_period.png", plot = genus_composition_site_period, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("results/bacteria_genus_composition_site_period.png", plot = genus_composition_site_period, width = 8, height = 6, units = "in", dpi = 300)

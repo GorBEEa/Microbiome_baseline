@@ -12,3 +12,6 @@
 
 # Ignore PICRUSt2 folder
 data/PICRUSt2*/
+
+# Ignore results folder
+results/
