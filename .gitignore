@@ -11,7 +11,7 @@
 *.fa
 
 # Ignore PICRUSt2 folder
-data/PICRUSt2*/
+data/modPICRUSt2*/
 
 # Ignore results folder
 results/
