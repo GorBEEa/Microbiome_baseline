@@ -1,0 +1,24 @@
+
+The option --per_sequence_contrib was set, but not the option --stratified. This means that a stratified pathway table will be output only (i.e. a stratified metagenome table will NOT be output).
+
+Warning - 59 input sequences aligned poorly to reference sequences (--min_align option specified a minimum proportion of 0.8 aligning to reference sequences). These input sequences will not be placed and will be excluded from downstream steps.
+
+This is the set of poorly aligned input sequences to be excluded: ASV_373, ASV_192, ASV_174, ASV_124, ASV_645, ASV_76, ASV_575, ASV_627, ASV_426, ASV_397, ASV_506, ASV_622, ASV_128, ASV_102, ASV_290, ASV_604, ASV_626, ASV_289, ASV_651, ASV_644, ASV_317, ASV_137, ASV_172, ASV_501, ASV_330, ASV_643, ASV_409, ASV_168, ASV_542, ASV_460, ASV_263, ASV_586, ASV_513, ASV_572, ASV_574, ASV_600, ASV_482, ASV_398, ASV_147, ASV_529, ASV_624, ASV_641, ASV_573, ASV_597, ASV_623, ASV_601, ASV_318, ASV_363, ASV_650, ASV_625, ASV_527, ASV_70, ASV_484, ASV_143, ASV_628, ASV_97, ASV_161, ASV_400, ASV_149
+
+
+Warning - 60 input sequences aligned poorly to reference sequences (--min_align option specified a minimum proportion of 0.8 aligning to reference sequences). These input sequences will not be placed and will be excluded from downstream steps.
+
+This is the set of poorly aligned input sequences to be excluded: ASV_149, ASV_482, ASV_651, ASV_513, ASV_506, ASV_161, ASV_626, ASV_643, ASV_622, ASV_124, ASV_426, ASV_168, ASV_330, ASV_263, ASV_373, ASV_527, ASV_574, ASV_400, ASV_645, ASV_147, ASV_76, ASV_128, ASV_363, ASV_102, ASV_174, ASV_172, ASV_601, ASV_290, ASV_623, ASV_575, ASV_192, ASV_586, ASV_137, ASV_572, ASV_484, ASV_318, ASV_397, ASV_398, ASV_644, ASV_628, ASV_460, ASV_317, ASV_542, ASV_641, ASV_143, ASV_597, ASV_289, ASV_573, ASV_70, ASV_624, ASV_539, ASV_650, ASV_600, ASV_529, ASV_604, ASV_501, ASV_97, ASV_409, ASV_627, ASV_625
+
+
+
+
+
+
+
+
+5 of 498 ASVs were above the max NSTI cut-off of 2.0 and were removed from the downstream analyses.
+
+5 of 498 ASVs were above the max NSTI cut-off of 2.0 and were removed from the downstream analyses.
+
+
