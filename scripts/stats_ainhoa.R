@@ -64,6 +64,18 @@ p$layers <- lapply(p$layers, function(layer) {
 p # now plot with thinner lines
 
 
+ggsave(
+  "results/sampling_completeness.png",
+  plot = p,
+  width = 4,
+  height = 5,
+  dpi = 400
+)
+
+
+save(p, file = "./results/RData/sampling_complete.RData")
+
+
 # Plot the sampling completeness curves
 ggiNEXT(asv_inext, type = 2) +
   ylab("ASV diversity") +
@@ -163,6 +175,48 @@ ggsave(
   dpi = 400
 )
 
+
+##keep only shannon diversity
+
+merged_df_sub <- subset(merged_df, merged_df$Diversity == "Shannon diversity")
+
+
+# First, convert period to numeric for the trend line
+merged_df_sub$period_num <- as.numeric(factor(merged_df_sub$period)) # preserves order
+
+
+p1_sh <- ggplot(merged_df_sub, aes(x = period, y = Observed, fill = period)) +
+  geom_violin(alpha = 0.8, trim = FALSE) +
+  geom_boxplot(width = 0.1, outlier.shape = NA, alpha = 0.7) +
+  geom_smooth(
+    data = merged_df_sub,
+    aes(x = period_num, y = Observed),
+    method = "lm",
+    se = FALSE,
+    color = "darkgrey",
+    linewidth = 0.5,
+    linetype = 2,
+    inherit.aes = FALSE
+  ) +
+  scale_fill_manual(values = pal) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(x = "Period", y = "ASV Diversity")
+p1_sh
+
+# Save the plot
+ggsave(
+  "results/violin_plot_SHANNON_diversity_period.png",
+  plot = p1_sh,
+  width = 4,
+  height = 5,
+  dpi = 400
+)
+
+
+save(p1_sh, file = "./results/RData/violin_plots_SHANNON_ASV_DIv.RData")
+
+
 ggplot(merged_df, aes(x = site, y = Observed, fill = site)) +
   geom_violin(alpha = 0.8, trim = FALSE) +
   geom_boxplot(width = 0.1, outlier.shape = NA, alpha = 0.7) +
@@ -181,6 +235,8 @@ merged_df$period_num <- as.numeric(sub(
 
 
 library(dplyr)
+library(broom)
+
 
 model_results <- merged_df %>%
   group_by(Diversity) %>%
@@ -196,6 +252,8 @@ model_results %>%
   filter(term == "period_num") %>%
   select(Diversity, estimate, std.error, statistic, p.value)
 
+m1 <- lm(Observed ~ period_num, data = merged_df_sub)
+summary(m1)
 
 ggplot(merged_df, aes(x = period_num, y = Observed)) +
   geom_point(alpha = 0.4) +
@@ -531,12 +589,29 @@ pal <- c("#3A9AB2", "#91BAB6", "#BDC881", "#E3B710", "#EC7A05", "#F11B00")
 p2 <- ggplot(nmds_df, aes(x = NMDS1, y = NMDS2, color = period)) +
   geom_point(size = 3, alpha = 0.8) +
   scale_color_manual(values = pal) +
-  labs(title = "NMDS of ASV Composition", color = "Period") +
+  labs(color = "Period") +
   theme_minimal(base_size = 14)
 
-p2
+# Calculate convex hulls for each period
+hulls <- nmds_df %>%
+  group_by(period) %>%
+  slice(chull(NMDS1, NMDS2)) # chull finds indices of convex hull points
+
+# Add polygons to your plot
+p2_hull <- p2 +
+  geom_polygon(
+    data = hulls,
+    aes(x = NMDS1, y = NMDS2, fill = period, group = period),
+    alpha = 0.2,
+    color = NA
+  ) +
+  scale_fill_manual(values = pal) +
+  guides(fill = "none") # hide fill legend if redundant
+
+p2_hull
 # Save the plot
-ggsave("results/nmds.png", plot = p2, width = 8, height = 5, dpi = 400)
+ggsave("results/nmds.png", plot = p2_hull, width = 8, height = 5, dpi = 400)
+save(p2_hull, file = "./results/RData/nmds.RData")
 
 #remove outliers
 nmds_df_sub <- subset(nmds_df, nmds_df$NMDS1 > -1.5)
@@ -634,10 +709,41 @@ p4 <- ggplot(merged_df_fl, aes(x = n_plants, y = Observed)) +
   theme_minimal()
 
 p4
+
+
 ggsave(
   "results/flower_richness.png",
   plot = p4,
   width = 8,
+  height = 5,
+  dpi = 400
+)
+
+
+##only shannon div
+
+merged_df_fl_sub <- subset(
+  merged_df_fl,
+  merged_df_fl$Diversity == "Shannon diversity"
+)
+p4_sh <- ggplot(merged_df_fl_sub, aes(x = n_plants, y = Observed)) +
+  geom_point(aes(color = period)) +
+  geom_smooth(method = "lm", color = "black") + # single line, not per period
+  scale_color_manual(values = pal) +
+  xlab("Plant species richness") +
+  ylab("Observed ASV diversity") +
+  theme_minimal()
+
+p4_sh
+
+
+save(p4_sh, file = "./results/RData/scatter_plant_ASV_Div.RData")
+
+
+ggsave(
+  "results/flower_richness_SHANNON.png",
+  plot = p4_sh,
+  width = 4,
   height = 5,
   dpi = 400
 )
