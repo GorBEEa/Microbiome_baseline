@@ -12,6 +12,7 @@
 
 # Ignore PICRUSt2 folder
 data/modPICRUSt2*/
+data/PICRUSt2*/
 
 # Ignore results folder
 results/
