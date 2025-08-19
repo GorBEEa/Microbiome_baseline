@@ -59,14 +59,11 @@ We analyzed community composition using Non-metric Multidimensional Scaling (NMD
 
 To assess the relationship between floral species diversity and the gut microbiome of wild bumblebees, we modeled three response variables separately: bacterial species richness (observed ASVs), Shannon diversity, and Simpson diversity. For each of these diversity metrics, we fitted a linear model with floral diversity as a predictor, while controlling for potential variation due to sampling period and site by including period and site as covariates.
 
-*Functional Prediction of Microbial Communities*
-To infer the functional potential of the bacterial communities, we used PICRUSt2 (Phylogenetic Investigation of Communities by Reconstruction of Unobserved States, version X.X) to predict metagenomic profiles from 16S rRNA gene sequence data. Amplicon sequence variants (ASVs) were aligned to a reference phylogeny using the place_seqsand hsp.py steps, and functional profiles were inferred based on KEGG Orthology (KO) and MetaCyc pathway databases. Predicted pathway abundances were normalized and compared across time periods. Based on observed differences in bacterial diversity and composition over time, we grouped sampling periods into early (March-May) and late (May-July) categories. Statistical comparisons of pathway relative abundances between these two groups were performed using differential abundance analysis, with significance assessed via permutation tests and adjusted p-values. This approach allowed us to assess seasonal shifts in the functional potential of gut microbial communities associated with changes in environmental conditions and floral resources.
-
+*Functional Prediction of Microbial Communities* To infer the functional potential of the bacterial communities, we used PICRUSt2 (Phylogenetic Investigation of Communities by Reconstruction of Unobserved States, version X.X) to predict metagenomic profiles from 16S rRNA gene sequence data. Amplicon sequence variants (ASVs) were aligned to a reference phylogeny using the place_seqsand hsp.py steps, and functional profiles were inferred based on KEGG Orthology (KO) and MetaCyc pathway databases. Predicted pathway abundances were normalized and compared across time periods. Based on observed differences in bacterial diversity and composition over time, we grouped sampling periods into early (March-May) and late (May-July) categories. Statistical comparisons of pathway relative abundances between these two groups were performed using differential abundance analysis, with significance assessed via permutation tests and adjusted p-values. This approach allowed us to assess seasonal shifts in the functional potential of gut microbial communities associated with changes in environmental conditions and floral resources.
 
 ## Results
 
-Throughout the flowering season, we collected a total of 132 bumblebee specimens across 16 sites, with an average of XX ± SD individuals per site and sampling period. Sampling completeness was generally high, averaging 90% across sites and periods, although it ranged widely from 21% to full completeness (Fig. S1), indicating robust coverage of the bacterial communities in our samples.
-Our results demonstrate a significant increase in bacterial diversity within bumblebee guts over time, as measured by Shannon diversity indices (Fig. 1; t = 50, p = 0.01). This suggests a dynamic shift in the gut microbiome throughout the season. The bacterial communities were dominated by Gammaproteobacteria, particularly genera XX and XX, followed by representatives of Actinobacteria, Firmicutes, and Cyanobacteria. Notably, a relatively large fraction (X%) of the bacterial sequences remained unidentified, pointing to the presence of potentially novel or poorly characterized taxa (Fig. S2).
+Throughout the flowering season, we collected a total of 132 bumblebee specimens across 16 sites, with an average of XX ± SD individuals per site and sampling period. Sampling completeness was generally high, averaging 90% across sites and periods, although it ranged widely from 21% to full completeness (Fig. S1), indicating robust coverage of the bacterial communities in our samples. Our results demonstrate a significant increase in bacterial diversity within bumblebee guts over time, as measured by Shannon diversity indices (Fig. 1; t = 50, p = 0.01). This suggests a dynamic shift in the gut microbiome throughout the season. The bacterial communities were dominated by Gammaproteobacteria, particularly genera XX and XX, followed by representatives of Actinobacteria, Firmicutes, and Cyanobacteria. Notably, a relatively large fraction (X%) of the bacterial sequences remained unidentified, pointing to the presence of potentially novel or poorly characterized taxa (Fig. S2).
 
 Examining temporal changes in community composition revealed a stable core microbiome consistently present across all time periods (Fig. 3) and sampling sites (Fig. SX). This core includes key ASVs from well-known bumblebee-associated genera such as Lactobacillus, Gilliamella, Snodgrassella, and Bombiscardovia, likely reflecting essential symbionts fundamental to host health and function. Interestingly, as the flowering season progressed, this core microbiome was supplemented by additional bacterial taxa, including species from genera such as Pseudomonas, Bacillus, Commensalibacter, and Apibacter, indicating a seasonal enrichment or colonization of the gut by a broader suite of bacteria.
 
@@ -74,7 +71,7 @@ Multivariate analyses of bacterial community composition through time showed cle
 
 Furthermore, we found a positive relationship between bacterial diversity in bumblebee guts and local plant species richness, indicating that sites with higher floral diversity support richer gut microbial communities. This association may partly reflect the overall increase in floral species diversity observed through time (Fig. 5), suggesting that the diversity of available floral resources influences the gut microbiome diversity of pollinators.
 
-Our preliminary analyses of fungal communities similarly indicate dynamic changes over the season, 
+Our preliminary analyses of fungal communities similarly indicate dynamic changes over the season,
 
 In the comparison between early and late periods, several microbial metabolic pathways showed increased relative abundance in the late period, suggesting functional shifts in the community. Notably, we observed an enrichment in multiple fermentation and menaquinone (vitamin K2) biosynthesis pathways, including the superpathway of fermentation (Chlamydomonas reinhardtii) and several superpathways of menaquinol biosynthesis (e.g., MK-6 to MK-13 variants, Fig. 7). These pathways are typically associated with anaerobic or facultative anaerobic metabolism, indicating a possible adaptation to lower oxygen availability or increased fermentation activity in the microbial community. Additionally, the increased abundance of the enterobacterial common antigen biosynthesis pathway points to a higher relative abundance of Enterobacteriaceae, a group often linked to environmental stress or host-associated niches. Enrichment in pyridoxal 5’-phosphate biosynthesis and salvage and L-aspartate/L-asparagine biosynthesis pathways suggests a rise in amino acid and cofactor biosynthesis, potentially reflecting metabolic specialization or nutrient demand. The presence of the chitin degradation II pathway may indicate greater abundance of chitinolytic bacteria, possibly in response to increased fungal biomass. Overall, these functional shifts point to a microbial community in the late period that is more metabolically versatile and adapted to anaerobic conditions, with increased capacity for nutrient processing and host/environment interaction.
 
@@ -98,7 +95,6 @@ Together, these findings underscore the dynamic nature of bumblebee gut microbio
 
 Figure legends
 
-
 **Figure 1.** *Temporal patterns of bacterial ASV diversity across periods.*  Violin plots show the distribution of observed ASV diversity values for each period, with embedded boxplots indicating medians and interquartile ranges. The dashed grey line represents the linear trend over time, highlighting directional changes in microbial diversity across periods. Diversity estimates were standardized using interpolation and extrapolation techniques to control for differences in sampling effort.
 
 **FIgure 2**. Relative abundance of major bacterial taxa in bumblebee gut samples across six sampling periods (p01 to p06). Each point represents the percentage of 16S rRNA gene copies recovered for a given taxon in an individual sample. Boxplots summarize the distribution of relative abundances per taxon, highlighting dominant groups such as Gammaproteobacteria and Unclassified bacteria. Temporal variation in community composition is indicated by different colors and shapes corresponding to sampling periods.
@@ -111,52 +107,49 @@ Figure legends
 
 **Figures**
 
-
 ```{r, include=TRUE, echo = FALSE, message=FALSE, error=FALSE, warning=FALSE, results='hide'}
 
-#script explore data
+#script 04_stats_ainhoa.R
 load("./results/RData/violin_plots_SHANNON_ASV_DIv.RData")
 
 p1_sh
 
 
 ```
-**Figure 1**
 
+**Figure 1**
 
 ```{r, include=TRUE, echo = FALSE, message=FALSE, error=FALSE, warning=FALSE, results='hide'}
 
-#script explore data
+#script 04_stats_ainhoa.R
 load("./results/RData/nmds.RData")
 
 p2_hull
 
 
 ```
+
 **Figure 5.**
 
 ```{r, include=TRUE, echo = FALSE, message=FALSE, error=FALSE, warning=FALSE, results='hide'}
 
-#script explore data
+#script 04_stats_ainhoa.R
 load("./results/RData/scatter_plant_ASV_Div.RData")
 
 p4_sh
 
 
 ```
+
 **Figure 6.**
-
-
 
 ## References
 
-
 ##Supplementary material
-
 
 ```{r, include=TRUE, echo = FALSE, message=FALSE, error=FALSE, warning=FALSE, results='hide'}
 
-#script explore data
+#script 04_stats_ainhoa.R
 load("./results/RData/sampling_complete.RData")
 
 p
@@ -167,4 +160,3 @@ p
 **Figure S1.**
 
 **Figure S1. Rarefaction and extrapolation curves showing ASV diversity across samples.** Sample-size-based rarefaction (solid lines) and extrapolation (dashed lines).
-
