@@ -1019,6 +1019,40 @@ p2_hull <- p2 +
 ggsave("results/nmds.png", plot = p2_hull, width = 8, height = 5, dpi = 400)
 save(p2_hull, file = "results/RData/nmds.RData")
 
+
+####graphs per site
+
+p2_site <- ggplot(nmds_df, aes(NMDS1, NMDS2, color = site)) +
+  geom_point(size = 3, alpha = 0.8) +
+  scale_color_viridis_d() + # needs library(viridis)
+  labs(color = "Site") +
+  theme_minimal(base_size = 14)
+
+# # convex hulls per period
+# hulls_site <- nmds_df %>%
+#   group_by(site) %>%
+#   slice(chull(NMDS1, NMDS2))
+#
+# p2_site_hull <- p2_site +
+#   geom_polygon(
+#     data = hulls_site,
+#     aes(x = NMDS1, y = NMDS2, fill = site, group = site),
+#     alpha = 0.2,
+#     color = NA
+#   ) +
+#   scale_color_viridis_d() +
+#   guides(fill = "none")
+
+ggsave(
+  "results/nmds_site.png",
+  plot = p2_site,
+  width = 8,
+  height = 5,
+  dpi = 400
+)
+save(p2_site, file = "results/RData/nmds_site.RData")
+
+
 #################################################
 ## 3) Global PERMANOVA (period + site)
 #################################################
