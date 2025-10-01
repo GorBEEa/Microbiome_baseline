@@ -93,7 +93,7 @@ In terms of temporal shifts, our results indicate the persistence of a core grou
 
 Interestingly, as the season progressed, the core microbiome was complemented by additional bacterial taxa, particularly species within the genera Pseudomonas, Bacillus, Commensalibacter, and Apibacter. This late-season diversification could be driven by changes in floral availability and composition, shifts in foraging behavior, or increased environmental exposure as colonies expand and worker bees travel farther distances (REF). These supplementary taxa may represent transient members of the microbiome that are acquired from specific floral resources or environmental sources, potentially enhancing metabolic capabilities or stress tolerance during the late foraging season.
 
-Our analysis revealed distinct temporal clustering of bacterial communities, with clear compositional differences between early and late time points. This temporal structuring suggests that the microbiome is not static but dynamically responds to seasonal changes in the environment. The early-season microbiome may be shaped by overwintering survival and the limited floral diversity available during initial foraging, while the late-season community reflects cumulative interactions with a broader spectrum of plant species. This shift may also be influenced by colony development stages, where increased colony size and worker numbers intensify environmental interactions.
+Our analysis revealed distinct temporal clustering of bacterial communities, with clear compositional differences between early and late time points. In parallel, we detected pronounced site-to-site differences in community composition that exceeded the magnitude of temporal turnover, indicating strong spatial structuring. This temporal structuring suggests that the microbiome is not static but dynamically responds to seasonal changes in the environment. The early-season microbiome may be shaped by overwintering survival and the limited floral diversity available during initial foraging, while the late-season community reflects cumulative interactions with a broader spectrum of plant species. This shift may also be influenced by colony development stages, where increased colony size and worker numbers intensify environmental interactions.
 
 Our results suggest a functional shift in the gut microbiome between early and late periods, with the late-season community showing increased metabolic versatility—particularly in pathways related to fermentation, anaerobic metabolism, and nutrient processing—possibly reflecting adaptation to changing environmental conditions or host diet.
 
@@ -165,8 +165,6 @@ p
 
 **Figure S1.**
 
-**Figure S1. Rarefaction and extrapolation curves showing ASV diversity across samples.** Sample-size-based rarefaction (solid lines) and extrapolation (dashed lines).
-
 ```{r, include=TRUE, echo = FALSE, message=FALSE, error=FALSE, warning=FALSE, results='hide'}
 
 #script 04_stats_ainhoa.R
@@ -176,7 +174,7 @@ p
 
 ```
 
-**FIgure S2.**
+**Figure S1. Rarefaction and extrapolation curves showing ASV diversity across samples.** Sample-size-based rarefaction (solid lines) and extrapolation (dashed lines).
 
 ```{r, include=TRUE, echo = FALSE, message=FALSE, error=FALSE, warning=FALSE, results='hide'}
 #script 04_stats_ainhoa.R
@@ -184,3 +182,15 @@ load("./results/RData/barchart_order.RData")
 
 plot_order
 ```
+
+**FIgure S2.**
+
+```{r, include=TRUE, echo = FALSE, message=FALSE, error=FALSE, warning=FALSE, results='hide'}
+#script 04_stats_ainhoa.R
+load("./results/nmds_site.RData")
+
+p2_site
+
+```
+
+**FIgure S3.**
