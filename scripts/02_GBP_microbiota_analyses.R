@@ -35,6 +35,13 @@ count_tab.cl <- as.data.frame(count_tab.cl)
 sample_data_tab.cl <- as(sample_data(ps.gbp23), "data.frame")
 tax_table.cl <- tax_table(ps.gbp23)
 
+# Rename objects to save in RData
+count_tab.cl.bacteria <- count_tab.cl
+sample_data_tab.cl.bacteria <- sample_data_tab.cl
+tax_table.cl.bacteria <- tax_table.cl
+
+save(count_tab.cl.bacteria, sample_data_tab.cl.bacteria, tax_table.cl.bacteria, file = ".RData")
+
 # Include site floral richness to sample_data
 # Add richness floral information to the sample_data_tab.cl
 flo_rich_site <- read_delim("data/richness_category_site.csv",  delim = ";")
@@ -710,7 +717,7 @@ ggplot(GorBEEa_2023_phylum, aes(x = period, y = Abundance, fill = Phylum)) +
   theme(axis.title.x = element_blank()) + 
   #
   guides(fill = guide_legend(reverse = TRUE, keywidth = 1, keyheight = 1)) +
-  ylab("Relative Abundance (Phyla > 2%) \n") +
+  ylab("Observed Relative Abundance (Phyla > 2%) \n") +
   ggtitle("Phylum Composition of GorBEEa \n Bacterial Communities by Period") 
 
 
@@ -756,7 +763,7 @@ genus_composition_indv <- ggplot(GorBEEa_2023_genus, aes(x = Sample, y = Abundan
     legend.text = element_text(face = "italic")
   ) +
   guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
-  ylab("Relative Abundance (Genus > 5%) \n") +
+  ylab("Observed Relative Abundance (Genus > 5%) \n") +
   ggtitle("Genus Composition of GorBEEa \n Bacterial Communities by specimen")
 
 plot(genus_composition_indv)
@@ -791,7 +798,7 @@ genus_composition_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = Abund
 ) + 
   #
   guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
-  ylab("Relative Abundance (Genus > 5%) \n") +
+  ylab("Observed Relative Abundance (Genus > 5%) \n") +
   ggtitle("Genus Composition of GorBEEa \n Bacterial Communities by Period")
 
 plot(genus_composition_period)
@@ -822,10 +829,13 @@ genus_composition_site <- ggplot(GorBEEa_2023_genus, aes(x = category, y = Abund
   #scale_fill_viridis_d(option = "viridis") +
   scale_fill_manual(values =genera_colors) +
   # Remove x axis title
-  theme(axis.title.x = element_blank()) + 
+  theme(axis.title.x = element_blank(),
+        #legend.position = "none"  # Oculta la leyenda
+        legend.text = element_text(face = "italic", size=10)  
+  ) + 
   #
   guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
-  ylab("Relative Abundance (Genus > 5%) \n") +
+  ylab("Observed Relative Abundance (Genus > 5%) \n") +
   ggtitle("Genus Composition of GorBEEa \n Bacterial Communities by Site Category") 
 
 plot(genus_composition_site)
@@ -839,7 +849,7 @@ plot(genus_composition_site)
 ggsave("results/bacteria_genus_composition_site.png", plot = genus_composition_site, width = 8, height = 6, units = "in", dpi = 300)
 
 
-### Group by flower abundacne and period
+### Group by flower abundance and period
 # Calculate samples per site category and period
 
 sample_counts <- GorBEEa_2023_genus %>%
@@ -854,7 +864,10 @@ genus_composition_site_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = 
   scale_fill_manual(values = genera_colors) +
   geom_text(data = sample_counts, aes(x = period, y = -0.05, label = paste("n=", n_samples)), inherit.aes = FALSE, vjust = 0.5, size = 3) +
   # Remove x axis title
-  theme(axis.title.x = element_blank()) + 
+  theme(axis.title.x = element_blank(),
+        #legend.position = "none"  # hide legend
+        legend.text = element_text(face = "italic", size=10)  
+  ) + 
   #
   guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
   ylab("Relative Abundance (Genus > 5%) \n") +

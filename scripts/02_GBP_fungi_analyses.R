@@ -8,7 +8,6 @@
 ###     Description: Metabarcoding analysis in R
 ###
 
-
 # Load libraries
 library(Biostrings) ; packageVersion("Biostrings")
 library(tidyverse) ; packageVersion("tidyverse")
@@ -21,6 +20,7 @@ library(dendextend) ; packageVersion("dendextend")
 library(viridis) ; packageVersion("viridis")
 library(patchwork) ; packageVersion("patchwork")
 library (dplyr) ; packageVersion("dplyr")
+library(RColorBrewer) ; packageVersion("RColorBrewer")
 
 # Load the phyloseq object
 ps.gbp23 <- readRDS("data/ps.gbp23.f.RDS")
@@ -35,7 +35,18 @@ count_tab.cl <- as.data.frame(count_tab.cl)
 sample_data_tab.cl <- sample_data(ps.gbp23)
 tax_table.cl <- tax_table(ps.gbp23)
 
+
+
+# Identify all zero samples
+samples_zero_counts <- colnames(count_tab.cl)[colSums(count_tab.cl) == 0]
+
+# Remove it from count_tab and metadata
+count_tab.cl <- count_tab.cl[, !colnames(count_tab.cl) %in% samples_zero_counts]
+sample_data_tab.cl <- sample_data_tab.cl[!rownames(sample_data_tab.cl) %in% samples_zero_counts, ]
+
 deseq_counts <- DESeqDataSetFromMatrix(count_tab.cl, colData = sample_data_tab.cl, design = ~period) 
+
+deseq_counts <- estimateSizeFactors(deseq_counts, type = "poscounts")
 deseq_counts_vst <- varianceStabilizingTransformation(deseq_counts)
 vst_trans_count_tab <- assay(deseq_counts_vst)
 euc_dist <- dist(t(vst_trans_count_tab))
@@ -56,7 +67,6 @@ labels_colors(euc_dend) <- dend_cols
 
 plot(euc_dend, ylab="VST Euc. dist.")
 
-
 # making our phyloseq object with transformed table
 vst_count_phy <- otu_table(vst_trans_count_tab, taxa_are_rows=T)
 sample_info_tab_phy <- sample_data(sample_data_tab.cl)
@@ -73,12 +83,21 @@ plot_ordination(vst_physeq, vst_pcoa, color="period") +
   scale_color_manual(values=unique(sample_data_tab.cl$color_p[order(sample_data_tab.cl$period)])) + 
   theme_bw() + theme(legend.position="none")
 
+
+
+
+
+
 #       2. Comparison between sites            ####
 
 deseq_counts <- DESeqDataSetFromMatrix(count_tab.cl, colData = sample_data_tab.cl, design = ~site) 
+
+deseq_counts <- estimateSizeFactors(deseq_counts, type = "poscounts")
 deseq_counts_vst <- varianceStabilizingTransformation(deseq_counts)
 vst_trans_count_tab <- assay(deseq_counts_vst)
 euc_dist <- dist(t(vst_trans_count_tab))
+
+
 
 # Hierarchical clustering for 
 euc_clust <- hclust(euc_dist, method="ward.D2")
@@ -471,25 +490,31 @@ smax <- max(sample_sums(ASV_physeq.NW.Fun))
 # melt to long format (for ggploting) 
 # prune out phyla below 2% in each sample
 
+# prepare melted data
 GorBEEa_2023_phylum <- ASV_physeq.NW.Fun %>%
-  tax_glom(taxrank = "Phylum") %>%                     # agglomerate at phylum level
-  transform_sample_counts(function(x) {x/sum(x)} ) %>% # Transform to rel. abundance
-  psmelt() %>%                                         # Melt to long format
-  filter(Abundance > 0.02) %>%                         # Filter out low abundance taxa
-  arrange(Phylum)                                      # Sort data frame alphabetically by phylum
+  tax_glom(taxrank = "Phylum") %>%
+  transform_sample_counts(function(x) { x / sum(x) }) %>%
+  psmelt()
 
-ggplot(GorBEEa_2023_phylum, aes(x = period, y = Abundance, fill = Phylum)) + 
+# clean, filter, and arrange
+GorBEEa_2023_phylum <- GorBEEa_2023_phylum %>%
+  filter(Abundance > 0.02) %>%
+  arrange(Phylum) %>%
+  mutate(Phylum_clean = str_remove(Phylum, "^p__"))
+
+
+ggplot(GorBEEa_2023_phylum, aes(x = period, y = Abundance, fill = Phylum_clean)) + 
   #facet_grid(site~.) +
   geom_bar(stat = "identity", position="fill") +
   scale_fill_viridis_d(option = "viridis") +
   # scale_fill_manual(values =sample_info_tab$color_p) +
   # Remove x axis title
+  labs(fill = "Phylum") +  # Rename legend title
   theme(axis.title.x = element_blank()) + 
   #
   guides(fill = guide_legend(reverse = TRUE, keywidth = 1, keyheight = 1)) +
-  ylab("Relative Abundance (Phyla > 2%) \n") +
+  ylab("Observed Relative Abundance (Phyla > 2%) \n") +
   ggtitle("Phylum Composition of GorBEEa \n Fungal Communities by Period") 
-
 
 
 # melt to long format (for ggploting) 
@@ -515,23 +540,31 @@ genera_colors <- c("#D32F2F", # Deep Red
                    "#4378A2"  # Steel Blue
 )
 
+# prepare melted data
 GorBEEa_2023_genus <- ASV_physeq.NW.Fun %>%
-  tax_glom(taxrank = "Genus") %>%                     # agglomerate at genus level
-  transform_sample_counts(function(x) {x/sum(x)} ) %>% # Transform to rel. abundance
-  psmelt() %>%                                         # Melt to long format
-  filter(Abundance > 0.20) %>%                         # Filter out low abundance taxa
-  arrange(Genus)                                      # Sort data frame alphabetically by phylum
+  tax_glom(taxrank = "Genus") %>%                           # agglomerate at genus level
+  transform_sample_counts(function(x) { x / sum(x) }) %>%   # Transform to rel. abundance
+  psmelt()                                                  # Melt to long format
 
-genus_composition_indv <- ggplot(GorBEEa_2023_genus, aes(x = Sample, y = Abundance, fill = Genus)) + 
+# clean, filter, and arrange
+GorBEEa_2023_genus <- GorBEEa_2023_genus %>%
+  filter(Abundance > 0.20) %>%                              # Filter out low abundance taxa
+  arrange(Genus) %>%                                        # Sort data frame alphabetically by genus
+  mutate(Genus_clean = str_remove(Genus, "^g__"))
+
+genus_composition_indv <- ggplot(GorBEEa_2023_genus, aes(x = Sample, y = Abundance, fill = Genus_clean)) + 
   geom_bar(stat = "identity") +
   scale_fill_viridis_d(option = "viridis") + # I do not recommend this color palette for many genera
   #scale_fill_manual(values =genera_colors) + # Color palette customized for this dataset and 0.05 value
   # Remove x axis title
-  theme(axis.title.x = element_blank()) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 6)) +
-  #
+  labs(fill = "Genus") +  # Rename legend title
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 6, face = "italic"),   # italic x-axis
+    legend.text = element_text(face = "italic")  # italic legend labels
+  ) +
   guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
-  ylab("Relative Abundance (Genus > 5%) \n") +
+  ylab("Oberved Relative Abundance (Genus > 5%) \n") +
   ggtitle("Genus Composition of GorBEEa \n Fungal Communities by specimen")
 
 plot(genus_composition_indv)
@@ -553,24 +586,51 @@ sample_counts <- GorBEEa_2023_genus %>%
   group_by(period) %>%
   summarise(n_samples = n_distinct(Sample))
 
-genus_composition_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = Abundance, fill = Genus)) + 
-  geom_bar(stat = "identity", position="fill") +
-  #geom_bar(stat = "identity") +
-  scale_fill_viridis_d(option = "viridis") + # I do not recommend this color palette for many genera
-  #scale_fill_manual(values =genera_colors) + # Color palette customized for this dataset and 0.05 value
+genus_composition_period <- ggplot(GorBEEa_2023_genus, 
+                                   aes(x = period, y = Abundance, fill = Genus_clean)) + 
+  geom_bar(stat = "identity", position = "fill") +
+  scale_fill_viridis_d(option = "viridis") + 
   geom_text(data = sample_counts, aes(x = period, y = 0, label = paste("n=", n_samples)), 
             inherit.aes = FALSE, vjust = 1.5, size = 3, color = "black") +
-  # Remove x axis title
-  theme(axis.title.x = element_blank(),
-  legend.position = "none"  # Oculta la leyenda
-  # legend.text = element_text(face = "italic", size=10)  
-) + 
-  #
+  labs(fill = "Genus") +  # Rename legend title
+  theme(
+    axis.title.x = element_blank(),
+    legend.text = element_text(face = "italic", size = 10)  # italic legend labels
+  ) +
   guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
-  ylab("Relative Abundance (Genus > 20%) \n") +
+  ylab("Observed Relative Abundance (Genus > 20%) \n") +
   ggtitle("Genus Composition of GorBEEa \n Fungal Communities by Period")
 
 plot(genus_composition_period)
+
+### Trying to improve plotting:
+
+sample_counts <- GorBEEa_2023_genus %>%
+  group_by(period) %>%
+  summarise(n_samples = n_distinct(Sample))
+
+# Create an extended color palette (works well for many taxa)
+n_taxa <- length(unique(GorBEEa_2023_genus$Genus_clean))
+my_colors <- colorRampPalette(brewer.pal(12, "Paired"))(n_taxa)
+
+genus_composition_period_v2 <- ggplot(GorBEEa_2023_genus, 
+                                      aes(x = period, y = Abundance, fill = Genus_clean)) + 
+  geom_bar(stat = "identity", position = "fill") +
+  scale_fill_manual(values = my_colors, name = "Genus") + 
+  geom_text(data = sample_counts, aes(x = period, y = 0, label = paste("n=", n_samples)), 
+            inherit.aes = FALSE, vjust = 1.5, size = 3, color = "black") +
+  labs(fill = "Genus") +
+  theme(
+    axis.title.x = element_blank(),
+    legend.text = element_text(face = "italic", size = 10),
+    legend.title = element_text(face = "plain", size = 10)
+  ) +
+  guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
+  ylab("Observed Relative Abundance (Genus > 20%) \n") +
+  ggtitle("Genus Composition of GorBEEa \n Fungal Communities by Period")
+
+plot(genus_composition_period_v2)
+
 
 ### LJ: I cannot save good figures in pdf
 
@@ -580,13 +640,18 @@ dev.off()
 
 ggsave("/Users/luisja/Downloads/genus_composition_period.pdf", plot = genus_composition_period, width = 8, height = 6, units = "in", dpi = 300)
 
+jpeg(filename = "genus_composition_period_v2.jpeg", width = 800, height = 600, quality = 100)
+print(genus_composition_period)
+dev.off()
 
+ggsave("/Users/luisja/Downloads/genus_composition_period_v2.pdf", plot = genus_composition_period, width = 8, height = 6, units = "in", dpi = 300)
 
+### Plot at species level
 GorBEEa_2023_species <- ASV_physeq.NW.Fun %>%
   tax_glom(taxrank = "Species") %>%                     # agglomerate at species level
-  transform_sample_counts(function(x) {x/sum(x)} ) %>% # Transform to rel. abundance
-  psmelt() %>%                                         # Melt to long format
-  filter(Abundance > 0.20) %>%                         # Filter out low abundance taxa
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%  # Transform to rel. abundance
+  psmelt() %>%                                          # Melt to long format
+  filter(Abundance > 0.20) %>%                          # Filter out low abundance taxa
   arrange(Species)       
 
 sample_counts <- GorBEEa_2023_species %>%
