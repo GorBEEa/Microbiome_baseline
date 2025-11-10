@@ -35,13 +35,6 @@ count_tab.cl <- as.data.frame(count_tab.cl)
 sample_data_tab.cl <- as(sample_data(ps.gbp23), "data.frame")
 tax_table.cl <- tax_table(ps.gbp23)
 
-# Rename objects to save in RData
-count_tab.cl.bacteria <- count_tab.cl
-sample_data_tab.cl.bacteria <- sample_data_tab.cl
-tax_table.cl.bacteria <- tax_table.cl
-
-save(count_tab.cl.bacteria, sample_data_tab.cl.bacteria, tax_table.cl.bacteria, file = ".RData")
-
 # Include site floral richness to sample_data
 # Add richness floral information to the sample_data_tab.cl
 flo_rich_site <- read_delim("data/richness_category_site.csv",  delim = ";")
@@ -71,6 +64,11 @@ write.table(sample_data_export,
             sep = "\t",           # tab delimiter
             quote = FALSE,        # no quotes around values
             row.names = FALSE) 
+
+# Rename objects to save in RData
+count_tab.cl.bacteria <- count_tab.cl
+sample_data_tab.cl.bacteria <- sample_data_tab.cl
+tax_table.cl.bacteria <- tax_table.cl
 
 #       1. Comparison between periods     ####
 
@@ -150,10 +148,6 @@ sample_data_filt <- as(sample_data(vst_physeq_filt), "data.frame")
 permanova_result <- adonis2(euc_dist_filt ~ period, data = sample_data_filt)
 print(permanova_result)
 
-
-
-
-
 # Recalculate variance explained for labeling
 variance_explained <- round(100 * eigen_vals_filt / sum(eigen_vals_filt), 1)
 
@@ -214,7 +208,6 @@ plot_ordination(vst_physeq, vst_pcoa, color="site") +
   theme_bw() + theme(legend.position="none")
 
 # We identify some outliers
-
 outliers <- c("GBP23040402M_16S_B48", "GBP23040401M_16S_B96", "GBP23021602M_16S_B96")
 # Remove the outliers from the phyloseq object
 vst_physeq_filt <- prune_samples(!(sample_names(vst_physeq) %in% outliers), vst_physeq)
@@ -350,12 +343,12 @@ plot_richness(ps.gbp23, color="period", measures=c("Observed", "Chao1", "ACE", "
   scale_color_manual(values=unique(sample_data_tab.cl$color_p[order(sample_data_tab.cl$period)])) +
   theme_bw() + theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
-period_richness_all <- plot_richness(ps.gbp23, x="period", color="period", measures=c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "Fisher")) + 
+bac_period_richness_all <- plot_richness(ps.gbp23, x="period", color="period", measures=c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "Fisher")) + 
   scale_color_manual(values=unique(sample_data_tab.cl$color_p[order(sample_data_tab.cl$period)])) +
   theme_bw() + theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   geom_violin() + geom_jitter(height = 0, width = 0.1)
 
-plot(period_richness_all)
+plot(bac_period_richness_all)
 
 
 site_richness <- plot_richness(ps.gbp23, x="site", color="site", measures=c("Chao1", "Shannon")) + 
@@ -372,8 +365,8 @@ flower_cat_richness <- plot_richness(ps.gbp23, x="category", color="category", m
   theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
 plot(flower_cat_richness)
-flower_cat_richness + geom_violin() + geom_jitter(height = 0, width = 0.1)
-
+flower_cat_bac_richness <- flower_cat_richness + geom_violin() + geom_jitter(height = 0, width = 0.1)
+flower_cat_bac_richness
 
 # Statistical comparisons
 
@@ -397,7 +390,6 @@ shapiro.test(richness_data$Chao1)
 viridis_palette <- c("#440154FF", "#414487FF", "#2A788EFF", "#22A884FF", "#7AD151FF", "#FDE725FF")
 
 magma_palette <- magma(16, direction = 1)
-
 
 plt1 <- ggbetweenstats(data = richness_data, x = period, y = Chao1, type = "nonparametric"
 ) +
@@ -429,8 +421,8 @@ plt6 <- ggbetweenstats(data = richness_data, x = category, y = Shannon, type = "
                        palette = "Blue2DarkOrange18Steps",
 )
 
-combined_plot <- (plt1 + plt2) / (plt3 + plt4) / (plt5 + plt6)
-combined_plot
+bac_period_richness_comparison_plot <- (plt1 + plt2) / (plt3 + plt4) / (plt5 + plt6)
+bac_period_richness_comparison_plot
 
 # Not significant difference between periods and sites.
 
@@ -439,7 +431,6 @@ combined_plot
 # using phyloseq to make a count table that has summed all ASVs
 # that were in the same phylum
 phyla_counts_tab <- otu_table(tax_glom(ps.gbp23, taxrank="Phylum")) 
-
 
 # making a vector of phyla names to set as row names
 phyla_tax_vec <- as.vector(tax_table(tax_glom(ps.gbp23, taxrank= "Phylum"))[,"Phylum"]) 
@@ -591,13 +582,14 @@ ggplot(filt_major_taxa_proportions_tab_for_plot.g2, aes(x=Sample, y=Proportion, 
   theme(axis.text.x=element_text(angle=90, vjust=0.4, hjust=1), legend.title=element_blank()) +
   labs(x="Sample", y="% of 16S rRNA gene copies recovered", title="All samples")
 
-ggplot(filt_major_taxa_proportions_tab_for_plot.g2, aes(Major_Taxa, Proportion)) +
+bac_major_taxa_all <- ggplot(filt_major_taxa_proportions_tab_for_plot.g2, aes(Major_Taxa, Proportion)) +
   geom_jitter(aes(color=factor(period), shape=factor(period)), size=2, width=0.15, height=0) +
   scale_color_manual(values=unique(filt_major_taxa_proportions_tab_for_plot.g2$color[order(filt_major_taxa_proportions_tab_for_plot.g2$period)])) +
   geom_boxplot(fill=NA, outlier.color=NA) + theme_bw() +
   theme(axis.text.x=element_text(angle=45, hjust=1), legend.title=element_blank()) +
   labs(x="Major Taxa", y="% of 16S rRNA gene copies recovered", title="All samples")
 
+bac_major_taxa_all
 
 # Function to generate a ggplot for a given period
 generate_major_taxa_plot <- function(period, data, sample_info_tab) {
@@ -635,9 +627,9 @@ for (period in periods) {
 
 
 # Combine all plots into a grid with patchwork package
-major_taxa_combined <- (plots[["p01"]] + plots[["p02"]] + plots[["p03"]]) / 
+bac_major_taxa_period <- (plots[["p01"]] + plots[["p02"]] + plots[["p03"]]) / 
   (plots[["p04"]] + plots[["p05"]] + plots[["p06"]])
-major_taxa_combined
+bac_major_taxa_period
 
 # Save the plots. !LJC Should I include this?
 # Save the combined plot
@@ -721,7 +713,6 @@ ggplot(GorBEEa_2023_phylum, aes(x = period, y = Abundance, fill = Phylum)) +
   ggtitle("Phylum Composition of GorBEEa \n Bacterial Communities by Period") 
 
 
-
 # melt to long format (for ggploting) 
 # prune out Genera below 5% in each sample
 
@@ -752,7 +743,7 @@ GorBEEa_2023_genus <- ASV_physeq.NW.Bact %>%
   filter(Abundance > 0.005) %>%                         # Filter out low abundance taxa
   arrange(Genus)                                      # Sort data frame alphabetically by phylum
 
-genus_composition_indv <- ggplot(GorBEEa_2023_genus, aes(x = Sample, y = Abundance, fill = Genus)) + 
+bac_genus_composition_indv <- ggplot(GorBEEa_2023_genus, aes(x = Sample, y = Abundance, fill = Genus)) + 
   geom_bar(stat = "identity") +
   #scale_fill_viridis_d(option = "viridis") + # I do not recommend this color palette for many genera
   scale_fill_manual(values =genera_colors) + # Color palette customized for this dataset and 0.05 value
@@ -766,8 +757,7 @@ genus_composition_indv <- ggplot(GorBEEa_2023_genus, aes(x = Sample, y = Abundan
   ylab("Observed Relative Abundance (Genus > 5%) \n") +
   ggtitle("Genus Composition of GorBEEa \n Bacterial Communities by specimen")
 
-plot(genus_composition_indv)
-
+plot(bac_genus_composition_indv)
 
 ### LJ: I cannot save good figures in pdf
 
@@ -785,7 +775,7 @@ sample_counts <- GorBEEa_2023_genus %>%
   group_by(period) %>%
   summarise(n_samples = n_distinct(Sample))
 
-genus_composition_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = Abundance, fill = Genus)) + 
+bac_genus_composition_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = Abundance, fill = Genus)) + 
   geom_bar(stat = "identity", position="fill") +
   #scale_fill_viridis_d(option = "viridis") + # I do not recommend this color palette for many genera
   scale_fill_manual(values =genera_colors) + # Color palette customized for this dataset and 0.05 value
@@ -801,7 +791,7 @@ genus_composition_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = Abund
   ylab("Observed Relative Abundance (Genus > 5%) \n") +
   ggtitle("Genus Composition of GorBEEa \n Bacterial Communities by Period")
 
-plot(genus_composition_period)
+plot(bac_genus_composition_period)
 
 ### LJ: I cannot save good figures in pdf
 
@@ -821,7 +811,7 @@ sample_counts <- GorBEEa_2023_genus %>%
   group_by(category) %>%
   summarise(n_samples = n_distinct(Sample))
 
-genus_composition_site <- ggplot(GorBEEa_2023_genus, aes(x = category, y = Abundance, fill = Genus)) + 
+bac_genus_composition_site <- ggplot(GorBEEa_2023_genus, aes(x = category, y = Abundance, fill = Genus)) + 
   #facet_grid(site~.) +
   geom_bar(stat = "identity", position="fill") +
   geom_text(data = sample_counts, aes(x = category, y = 0, label = paste("n=", n_samples)), 
@@ -838,7 +828,7 @@ genus_composition_site <- ggplot(GorBEEa_2023_genus, aes(x = category, y = Abund
   ylab("Observed Relative Abundance (Genus > 5%) \n") +
   ggtitle("Genus Composition of GorBEEa \n Bacterial Communities by Site Category") 
 
-plot(genus_composition_site)
+plot(bac_genus_composition_site)
 
 ### LJ: I cannot save good figures in pdf
 
@@ -856,7 +846,7 @@ sample_counts <- GorBEEa_2023_genus %>%
   group_by(category, period) %>%
   summarise(n_samples = n_distinct(Sample))
 
-genus_composition_site_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = Abundance, fill = Genus)) + 
+bac_genus_composition_site_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = Abundance, fill = Genus)) + 
   geom_bar(stat = "identity", position="fill") +
   facet_wrap(category~.) +
   #geom_bar(stat = "identity") +
@@ -873,7 +863,7 @@ genus_composition_site_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = 
   ylab("Relative Abundance (Genus > 5%) \n") +
   ggtitle("Genus Composition of GorBEEa \n Bacterial Communities by Site Category & Period") 
 
-plot(genus_composition_site_period)
+plot(bac_genus_composition_site_period)
 
 ### LJ: I cannot save good figures in pdf
 
@@ -882,3 +872,17 @@ plot(genus_composition_site_period)
 #dev.off()
 
 ggsave("results/bacteria_genus_composition_site_period.png", plot = genus_composition_site_period, width = 8, height = 6, units = "in", dpi = 300)
+
+# Save into .RData file
+
+save(count_tab.cl.bacteria, sample_data_tab.cl.bacteria, tax_table.cl.bacteria,
+    bac_period_richness_comparison_plot,
+    bac_period_richness_all,
+    flower_cat_bac_richness,
+    bac_major_taxa_all,
+    bac_major_taxa_period,
+    bac_genus_composition_indv,
+    bac_genus_composition_period,
+    bac_genus_composition_site,
+    bac_genus_composition_site_period, 
+    file = "bpas_bacteria.RData")
