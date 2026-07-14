@@ -8,7 +8,6 @@
 ###     Description: Metabarcoding analysis in R
 ###
 
-
 # Load libraries
 library(Biostrings) ; packageVersion("Biostrings")
 library(tidyverse) ; packageVersion("tidyverse")
@@ -21,10 +20,14 @@ library(dendextend) ; packageVersion("dendextend")
 library(viridis) ; packageVersion("viridis")
 library(patchwork) ; packageVersion("patchwork")
 library (dplyr) ; packageVersion("dplyr")
+library(RColorBrewer) ; packageVersion("RColorBrewer")
 
 # Load the phyloseq object
 ps.gbp23 <- readRDS("data/ps.gbp23.f.RDS")
 print(ps.gbp23)
+
+# Load .RData file with bacteria information
+load("bpas_bacteria.RData")
 
 #       1. Comparison between periods     ####
 
@@ -35,7 +38,21 @@ count_tab.cl <- as.data.frame(count_tab.cl)
 sample_data_tab.cl <- sample_data(ps.gbp23)
 tax_table.cl <- tax_table(ps.gbp23)
 
+# Identify all zero samples
+samples_zero_counts <- colnames(count_tab.cl)[colSums(count_tab.cl) == 0]
+
+# Remove it from count_tab and metadata
+count_tab.cl <- count_tab.cl[, !colnames(count_tab.cl) %in% samples_zero_counts]
+sample_data_tab.cl <- sample_data_tab.cl[!rownames(sample_data_tab.cl) %in% samples_zero_counts, ]
+
+# Rename objects to save in RData
+count_tab.cl.fungi <- count_tab.cl
+sample_data_tab.cl.fungi <- sample_data_tab.cl
+tax_table.cl.fungi <- tax_table.cl
+
 deseq_counts <- DESeqDataSetFromMatrix(count_tab.cl, colData = sample_data_tab.cl, design = ~period) 
+
+deseq_counts <- estimateSizeFactors(deseq_counts, type = "poscounts")
 deseq_counts_vst <- varianceStabilizingTransformation(deseq_counts)
 vst_trans_count_tab <- assay(deseq_counts_vst)
 euc_dist <- dist(t(vst_trans_count_tab))
@@ -56,7 +73,6 @@ labels_colors(euc_dend) <- dend_cols
 
 plot(euc_dend, ylab="VST Euc. dist.")
 
-
 # making our phyloseq object with transformed table
 vst_count_phy <- otu_table(vst_trans_count_tab, taxa_are_rows=T)
 sample_info_tab_phy <- sample_data(sample_data_tab.cl)
@@ -73,12 +89,21 @@ plot_ordination(vst_physeq, vst_pcoa, color="period") +
   scale_color_manual(values=unique(sample_data_tab.cl$color_p[order(sample_data_tab.cl$period)])) + 
   theme_bw() + theme(legend.position="none")
 
+
+
+
+
+
 #       2. Comparison between sites            ####
 
 deseq_counts <- DESeqDataSetFromMatrix(count_tab.cl, colData = sample_data_tab.cl, design = ~site) 
+
+deseq_counts <- estimateSizeFactors(deseq_counts, type = "poscounts")
 deseq_counts_vst <- varianceStabilizingTransformation(deseq_counts)
 vst_trans_count_tab <- assay(deseq_counts_vst)
 euc_dist <- dist(t(vst_trans_count_tab))
+
+
 
 # Hierarchical clustering for 
 euc_clust <- hclust(euc_dist, method="ward.D2")
@@ -125,20 +150,7 @@ abline(v=(min(rowSums(t(count_tab.cl)))))
 
 ##      3.2. Richness and diversity estimates   ####
 
-################################## Perhaps not neccessary
-# first we need to create a phyloseq object using our un-transformed count table
-count_tab_phy <- otu_table(count_tab.cl, taxa_are_rows=T)
-tax_tab_phy <- tax_table(tax_table.cl)
-sample_info_tab_phy<- sample_data(sample_data_tab.cl)
 
-ASV_physeq <- phyloseq(count_tab_phy, tax_tab_phy, sample_info_tab_phy)
-
-
-
-# LJ remove?
-#ps.gbp23
-#sample_data_tab.cl
-##################################
 
 
 plot_richness(ps.gbp23, color="period", measures=c("Chao1", "Shannon")) + 
@@ -150,14 +162,15 @@ period_richness <- plot_richness(ps.gbp23, x="period", color="period", measures=
   theme_bw() + theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   geom_violin() + geom_jitter(height = 0, width = 0.1)
 
-period_richness + scale_fill_manual(values=c("#440154FF","#414487FF","#2A788EFF","#22A884FF","#7AD151FF","#FDE725FF","red"))
+fung_period_richness <- period_richness + scale_fill_manual(values=c("#440154FF","#414487FF","#2A788EFF","#22A884FF","#7AD151FF","#FDE725FF","red"))
+fung_period_richness
 
 site_richness <- plot_richness(ps.gbp23, x="site", color="site", measures=c("Chao1", "Shannon")) + 
   scale_color_manual(values=unique(sample_data_tab.cl$color_s[order(sample_data_tab.cl$site)])) +
   theme_bw() + theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
-site_richness + geom_violin() + geom_jitter(height = 0, width = 0.1)
-
+fung_site_richness <- site_richness + geom_violin() + geom_jitter(height = 0, width = 0.1)
+fung_site_richness
 
 # Statistical comparisons
 
@@ -195,18 +208,15 @@ plt4 <- ggbetweenstats(data = richness_data, x = site, y = Shannon, type = "nonp
                        palette = "Blue2DarkOrange18Steps",
 )
 
-combined_plot <- (plt1 + plt2) / (plt3 + plt4)
-combined_plot
+fung_period_richness_comparison_plot <- (plt1 + plt2) / (plt3 + plt4)
+fung_period_richness_comparison_plot
 
 # Not significant difference between periods and sites.
 
 ##      3.3. TAXONOMIC SUMMARIES      ####
 
 
-#ps.gbp23
-#sample_data_tab.cl
-tax_table.cl
-#count_tab.cl
+
 
 # using phyloseq to make a count table that has summed all ASVs
 # that were in the same phylum
@@ -229,15 +239,6 @@ unclassified_tax_counts <- colSums(count_tab.cl) - colSums(phyla_counts_tab)
 # and we'll add this row to our phylum count table:
 phyla_and_unidentified_counts_tab <- rbind(phyla_counts_tab, "Unclassified"=unclassified_tax_counts)
 
-
-### Not ran ----
-# now we'll remove the Proteobacteria, so we can next add them back in
-# broken down by class
-temp_major_taxa_counts_tab <- phyla_and_unidentified_counts_tab[!row.names(phyla_and_unidentified_counts_tab) %in% "Proteobacteria", ]
-### END ----
-
-
-
 # making count table broken down by class (contains classes beyond the
 # Proteobacteria too at this point)
 class_counts_tab <- otu_table(tax_glom(ps.gbp23, taxrank= "Class")) 
@@ -250,29 +251,9 @@ class_tmp_vec <- class_tax_phy_tab[,3]
 rows_tmp <- row.names(class_tax_phy_tab)
 class_tax_tab <- data.frame("Phylum"=phy_tmp_vec, "Class"=class_tmp_vec, row.names = rows_tmp)
 
-
-### Not ran ----
-# making a vector of just the Proteobacteria classes
-proteo_classes_vec <- as.vector(class_tax_tab[class_tax_tab$Phylum == "Proteobacteria", "Class"])
-### END ----
-
 # changing the row names like above so that they correspond to the taxonomy,
 # rather than an ASV identifier
 rownames(class_counts_tab) <- as.vector(class_tax_tab$Class) 
-
-
-
-### Not ran ----
-# making a table of the counts of the Proteobacteria classes
-proteo_class_counts_tab <- class_counts_tab[row.names(class_counts_tab) %in% proteo_classes_vec, ] 
-# there are also possibly some some sequences that were resolved to the level
-# of Proteobacteria, but not any further, and therefore would be missing from
-# our class table
-# we can find the sum of them by subtracting the proteo class count table
-# from just the Proteobacteria row from the original phylum-level count table
-proteo_no_class_annotated_counts <- phyla_and_unidentified_counts_tab[row.names(phyla_and_unidentified_counts_tab) %in% "Proteobacteria", ] - colSums(proteo_class_counts_tab)
-### END ----
-
 
 # now combining the tables:
 major_taxa_counts_tab <- rbind(phyla_and_unidentified_counts_tab)
@@ -471,26 +452,33 @@ smax <- max(sample_sums(ASV_physeq.NW.Fun))
 # melt to long format (for ggploting) 
 # prune out phyla below 2% in each sample
 
+# prepare melted data
 GorBEEa_2023_phylum <- ASV_physeq.NW.Fun %>%
-  tax_glom(taxrank = "Phylum") %>%                     # agglomerate at phylum level
-  transform_sample_counts(function(x) {x/sum(x)} ) %>% # Transform to rel. abundance
-  psmelt() %>%                                         # Melt to long format
-  filter(Abundance > 0.02) %>%                         # Filter out low abundance taxa
-  arrange(Phylum)                                      # Sort data frame alphabetically by phylum
+  tax_glom(taxrank = "Phylum") %>%
+  transform_sample_counts(function(x) { x / sum(x) }) %>%
+  psmelt()
 
-ggplot(GorBEEa_2023_phylum, aes(x = period, y = Abundance, fill = Phylum)) + 
+# clean, filter, and arrange
+GorBEEa_2023_phylum <- GorBEEa_2023_phylum %>%
+  filter(Abundance > 0.02) %>%
+  arrange(Phylum) %>%
+  mutate(Phylum_clean = str_remove(Phylum, "^p__"))
+
+
+fung_phylum_comp <- ggplot(GorBEEa_2023_phylum, aes(x = period, y = Abundance, fill = Phylum_clean)) + 
   #facet_grid(site~.) +
   geom_bar(stat = "identity", position="fill") +
   scale_fill_viridis_d(option = "viridis") +
   # scale_fill_manual(values =sample_info_tab$color_p) +
   # Remove x axis title
+  labs(fill = "Phylum") +  # Rename legend title
   theme(axis.title.x = element_blank()) + 
   #
   guides(fill = guide_legend(reverse = TRUE, keywidth = 1, keyheight = 1)) +
-  ylab("Relative Abundance (Phyla > 2%) \n") +
+  ylab("Observed Relative Abundance (Phyla > 2%) \n") +
   ggtitle("Phylum Composition of GorBEEa \n Fungal Communities by Period") 
 
-
+fung_phylum_comp
 
 # melt to long format (for ggploting) 
 # prune out Genera below 5% in each sample
@@ -515,23 +503,31 @@ genera_colors <- c("#D32F2F", # Deep Red
                    "#4378A2"  # Steel Blue
 )
 
+# prepare melted data
 GorBEEa_2023_genus <- ASV_physeq.NW.Fun %>%
-  tax_glom(taxrank = "Genus") %>%                     # agglomerate at genus level
-  transform_sample_counts(function(x) {x/sum(x)} ) %>% # Transform to rel. abundance
-  psmelt() %>%                                         # Melt to long format
-  filter(Abundance > 0.20) %>%                         # Filter out low abundance taxa
-  arrange(Genus)                                      # Sort data frame alphabetically by phylum
+  tax_glom(taxrank = "Genus") %>%                           # agglomerate at genus level
+  transform_sample_counts(function(x) { x / sum(x) }) %>%   # Transform to rel. abundance
+  psmelt()                                                  # Melt to long format
 
-genus_composition_indv <- ggplot(GorBEEa_2023_genus, aes(x = Sample, y = Abundance, fill = Genus)) + 
+# clean, filter, and arrange
+GorBEEa_2023_genus <- GorBEEa_2023_genus %>%
+  filter(Abundance > 0.20) %>%                              # Filter out low abundance taxa
+  arrange(Genus) %>%                                        # Sort data frame alphabetically by genus
+  mutate(Genus_clean = str_remove(Genus, "^g__"))
+
+genus_composition_indv <- ggplot(GorBEEa_2023_genus, aes(x = Sample, y = Abundance, fill = Genus_clean)) + 
   geom_bar(stat = "identity") +
   scale_fill_viridis_d(option = "viridis") + # I do not recommend this color palette for many genera
   #scale_fill_manual(values =genera_colors) + # Color palette customized for this dataset and 0.05 value
   # Remove x axis title
-  theme(axis.title.x = element_blank()) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 6)) +
-  #
+  labs(fill = "Genus") +  # Rename legend title
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 6, face = "italic"),   # italic x-axis
+    legend.text = element_text(face = "italic")  # italic legend labels
+  ) +
   guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
-  ylab("Relative Abundance (Genus > 5%) \n") +
+  ylab("Oberved Relative Abundance (Genus > 5%) \n") +
   ggtitle("Genus Composition of GorBEEa \n Fungal Communities by specimen")
 
 plot(genus_composition_indv)
@@ -553,24 +549,76 @@ sample_counts <- GorBEEa_2023_genus %>%
   group_by(period) %>%
   summarise(n_samples = n_distinct(Sample))
 
-genus_composition_period <- ggplot(GorBEEa_2023_genus, aes(x = period, y = Abundance, fill = Genus)) + 
-  geom_bar(stat = "identity", position="fill") +
-  #geom_bar(stat = "identity") +
-  scale_fill_viridis_d(option = "viridis") + # I do not recommend this color palette for many genera
-  #scale_fill_manual(values =genera_colors) + # Color palette customized for this dataset and 0.05 value
+fung_genus_composition_period <- ggplot(GorBEEa_2023_genus, 
+                                   aes(x = period, y = Abundance, fill = Genus_clean)) + 
+  geom_bar(stat = "identity", position = "fill") +
+  scale_fill_viridis_d(option = "viridis") + 
   geom_text(data = sample_counts, aes(x = period, y = 0, label = paste("n=", n_samples)), 
             inherit.aes = FALSE, vjust = 1.5, size = 3, color = "black") +
-  # Remove x axis title
-  theme(axis.title.x = element_blank(),
-  legend.position = "none"  # Oculta la leyenda
-  # legend.text = element_text(face = "italic", size=10)  
-) + 
-  #
+  labs(fill = "Genus") +  # Rename legend title
+  theme(
+    axis.title.x = element_blank(),
+    legend.text = element_text(face = "italic", size = 10)  # italic legend labels
+  ) +
   guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
-  ylab("Relative Abundance (Genus > 20%) \n") +
+  ylab("Observed Relative Abundance (Genus > 20%) \n") +
   ggtitle("Genus Composition of GorBEEa \n Fungal Communities by Period")
 
-plot(genus_composition_period)
+plot(fung_genus_composition_period)
+
+### Trying to improve plotting v2:
+
+sample_counts <- GorBEEa_2023_genus %>%
+  group_by(period) %>%
+  summarise(n_samples = n_distinct(Sample))
+
+fung_genus_composition_period_v2 <- ggplot(GorBEEa_2023_genus, 
+                                           aes(x = period, y = Abundance, fill = Genus_clean)) + 
+  geom_bar(stat = "identity", position = "fill", 
+           color = "grey30",
+           linewidth = 0.2) + 
+  scale_fill_viridis_d(option = "viridis") + 
+  geom_text(data = sample_counts, aes(x = period, y = 0, label = paste("n=", n_samples)), 
+            inherit.aes = FALSE, vjust = 1.5, size = 3, color = "black") +
+  labs(fill = "Genus") +
+  theme(
+    axis.title.x = element_blank(),
+    legend.text = element_text(face = "italic", size = 10)
+  ) +
+  guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
+  ylab("Observed Relative Abundance (Genus > 20%) \n") +
+  ggtitle("Genus Composition of GorBEEa \n Fungal Communities by Period")
+
+plot(fung_genus_composition_period_v2)
+
+### Trying to improve plotting v3:
+
+sample_counts <- GorBEEa_2023_genus %>%
+  group_by(period) %>%
+  summarise(n_samples = n_distinct(Sample))
+
+# Create an extended color palette (works well for many taxa)
+n_taxa <- length(unique(GorBEEa_2023_genus$Genus_clean))
+my_colors <- colorRampPalette(brewer.pal(12, "Paired"))(n_taxa)
+
+fung_genus_composition_period_v3 <- ggplot(GorBEEa_2023_genus, 
+                                      aes(x = period, y = Abundance, fill = Genus_clean)) + 
+  geom_bar(stat = "identity", position = "fill") +
+  scale_fill_manual(values = my_colors, name = "Genus") + 
+  geom_text(data = sample_counts, aes(x = period, y = 0, label = paste("n=", n_samples)), 
+            inherit.aes = FALSE, vjust = 1.5, size = 3, color = "black") +
+  labs(fill = "Genus") +
+  theme(
+    axis.title.x = element_blank(),
+    legend.text = element_text(face = "italic", size = 10),
+    legend.title = element_text(face = "plain", size = 10)
+  ) +
+  guides(fill = guide_legend(reverse = FALSE, keywidth = 1, keyheight = 1)) +
+  ylab("Observed Relative Abundance (Genus > 20%) \n") +
+  ggtitle("Genus Composition of GorBEEa \n Fungal Communities by Period")
+
+plot(fung_genus_composition_period_v3)
+
 
 ### LJ: I cannot save good figures in pdf
 
@@ -580,13 +628,18 @@ dev.off()
 
 ggsave("/Users/luisja/Downloads/genus_composition_period.pdf", plot = genus_composition_period, width = 8, height = 6, units = "in", dpi = 300)
 
+jpeg(filename = "genus_composition_period_v2.jpeg", width = 800, height = 600, quality = 100)
+print(genus_composition_period)
+dev.off()
 
+ggsave("/Users/luisja/Downloads/genus_composition_period_v2.pdf", plot = genus_composition_period, width = 8, height = 6, units = "in", dpi = 300)
 
+### Plot at species level
 GorBEEa_2023_species <- ASV_physeq.NW.Fun %>%
   tax_glom(taxrank = "Species") %>%                     # agglomerate at species level
-  transform_sample_counts(function(x) {x/sum(x)} ) %>% # Transform to rel. abundance
-  psmelt() %>%                                         # Melt to long format
-  filter(Abundance > 0.20) %>%                         # Filter out low abundance taxa
+  transform_sample_counts(function(x) {x/sum(x)} ) %>%  # Transform to rel. abundance
+  psmelt() %>%                                          # Melt to long format
+  filter(Abundance > 0.20) %>%                          # Filter out low abundance taxa
   arrange(Species)       
 
 sample_counts <- GorBEEa_2023_species %>%
@@ -613,7 +666,7 @@ plot(species_composition_period)
 ###   Relative Abundance by site
 ###
 
-# Calcular el número de muestras por 'site'
+# Estimate sample size per site
 
 sample_counts <- GorBEEa_2023_genus %>%
   group_by(site) %>%
@@ -643,10 +696,7 @@ dev.off()
 
 ggsave("genus_composition_site.png", plot = genus_composition_site, width = 8, height = 6, units = "in", dpi = 300)
 
-
 ### Group by site and period
-
-# Contar muestras por sitio y periodo
 
 sample_counts <- GorBEEa_2023_genus %>%
   group_by(site, period) %>%
@@ -675,4 +725,36 @@ jpeg(filename = "genus_composition_site_period.jpeg", width = 800, height = 600,
 print(genus_composition_site_period)
 dev.off()
 
-ggsave("genus_composition_site_period.png", plot = genus_composition_site_period, width = 8, height = 6, units = "in", dpi = 300)
+# Combine fungal and bacterial observed relative abundance plots 
+# (bacterial plot generated in script 02_GBP_microbiota_analyses)
+combined_bac_fungi_genus_comp_period <- bac_genus_composition_period + 
+  fung_genus_composition_period_v3 +
+  plot_annotation(tag_levels = "A")  
+
+combined_bac_fungi_genus_comp_period
+
+
+combined_bac_fungi_genus_comp_period_v2 <- bac_genus_composition_period /
+  fung_genus_composition_period_v3 +
+  plot_layout(heights = c(10, 10), guides = "collect") +  
+  plot_annotation(tag_levels = "A")
+
+combined_bac_fungi_genus_comp_period_v2
+
+ggsave("results/combined_bac_fungi_genus_comp_period.png", plot = combined_bac_fungi_genus_comp_period, width = 18, height = 6, units = "in", dpi = 300)
+ggsave("results/combined_bac_fungi_genus_comp_period_v2.png", plot = combined_bac_fungi_genus_comp_period_v2, width = 18, height = 12, units = "in", dpi = 300)
+
+
+# Save into .RData file
+
+save(count_tab.cl.fungi, sample_data_tab.cl.fungi, tax_table.cl.fungi,
+     fung_period_richness_comparison_plot, 
+     fung_period_richness,
+     fung_site_richness,
+     fung_phylum_comp,
+     fung_genus_composition_period,
+     fung_genus_composition_period_v2,
+     fung_genus_composition_period_v3,
+     combined_bac_fungi_genus_comp_period,
+     combined_bac_fungi_genus_comp_period_v2,
+     file = "bpas_fungi.RData")
