@@ -3,6 +3,9 @@
 .RData
 .Ruserdata
 .DS_Store
+.claude/*
+graphify-out/*
+CLAUDE.md
 
 # Ignore all .RDS files
 *.RDS
