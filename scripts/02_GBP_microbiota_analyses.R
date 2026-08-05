@@ -135,7 +135,7 @@ PCoA_period <- plot_ordination(vst_physeq_filt, vst_pcoa_filt, color="period") +
   theme_bw() + 
   theme(legend.position="none")
 
-ggsave(glue("results/PCoA_bacteria_16S_period.png"), plot = PCoA_period, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("results/PCoA_bacteria_16S_period.png", plot = PCoA_period, width = 8, height = 6, units = "in", dpi = 300)
 
 # Create Euclidean distance matrix after filtering outliers
 vst_tab_filt <- as(otu_table(vst_physeq_filt), "matrix")
@@ -853,7 +853,7 @@ plot(bac_genus_composition_indv)
 #print(genus_composition_indv)
 #dev.off()
 
-ggsave("results/bacteria_genus_composition_indv.png", plot = genus_composition_period, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("results/bacteria_genus_composition_indv.png", plot = bac_genus_composition_indv, width = 8, height = 6, units = "in", dpi = 300)
 
 ###
 ###     Group by periods
@@ -887,7 +887,7 @@ plot(bac_genus_composition_period)
 #print(genus_composition_period)
 #dev.off()
 
-ggsave("results/bacteria_genus_composition_period.pdf", plot = genus_composition_period, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("results/bacteria_genus_composition_period.pdf", plot = bac_genus_composition_period, width = 8, height = 6, units = "in", dpi = 300)
 
 ###
 ###   Relative Abundance by flower abundance category
@@ -924,7 +924,7 @@ plot(bac_genus_composition_site)
 #print(genus_composition_site)
 #dev.off()
 
-ggsave("results/bacteria_genus_composition_site.png", plot = genus_composition_site, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("results/bacteria_genus_composition_site.png", plot = bac_genus_composition_site, width = 8, height = 6, units = "in", dpi = 300)
 
 
 ### Group by flower abundance and period
@@ -959,7 +959,7 @@ plot(bac_genus_composition_site_period)
 #print(genus_composition_site_period)
 #dev.off()
 
-ggsave("results/bacteria_genus_composition_site_period.png", plot = genus_composition_site_period, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("results/bacteria_genus_composition_site_period.png", plot = bac_genus_composition_site_period, width = 8, height = 6, units = "in", dpi = 300)
 
 # Save into .RData file
 
