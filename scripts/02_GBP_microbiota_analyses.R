@@ -3,7 +3,7 @@
 ###     Authors: Chueca Luis J., Poza Jon, Dhami Manpreet P., Donald Marion L., 
 ###     Rose Jennifer, Salgado-Irazabal Xabier, Hermosilla Brais,
 ###     Gostout Christian & Magrach Ainhoa.
-###     Year: 2025?
+###     Year: 2026
 ###     Related project: GorBEEa
 ###     Description: Metabarcoding analysis in R
 ###
@@ -424,7 +424,95 @@ plt6 <- ggbetweenstats(data = richness_data, x = category, y = Shannon, type = "
 bac_period_richness_comparison_plot <- (plt1 + plt2) / (plt3 + plt4) / (plt5 + plt6)
 bac_period_richness_comparison_plot
 
-# Not significant difference between periods and sites.
+# Not significant difference between periods and sites to all ASVs
+
+
+#####
+
+
+# Filter to Bacteria only (excludes Mitochondria, Chloroplast, Eukaryota and Kingdom=NA)
+ASV_physeq.NW.Bact <- ps.gbp23 %>%
+  subset_taxa(
+    Kingdom == "Bacteria" &
+      Family  != "Mitochondria" &
+      Order   != "Chloroplast"
+  )
+
+ASV_physeq.NW.Bact
+# 259 taxa (vs 557 in ps.gbp23 unfiltered)
+
+# Alpha diversity on the already filtered object
+richness_data_filt <- estimate_richness(ASV_physeq.NW.Bact, measures = c("Chao1", "Shannon"))
+richness_data_filt$period   <- sample_data(ASV_physeq.NW.Bact)$period
+richness_data_filt$site     <- sample_data(ASV_physeq.NW.Bact)$site
+richness_data_filt$category <- sample_data(ASV_physeq.NW.Bact)$category
+
+# Normality (to compare with the original unfiltered result)
+shapiro.test(richness_data_filt$Shannon)
+# data:  richness_data_filt$Shannon
+# W = 0.96942, p-value = 0.005646 -> No normal
+shapiro.test(richness_data_filt$Chao1)
+# data:  richness_data_filt$Chao1
+# W = 0.88623, p-value = 2.058e-08 -> No normal
+
+# plot_richness equivalent to the original, but filtered
+period_richness_filt <- plot_richness(ASV_physeq.NW.Bact, x = "period", color = "period",
+                                      measures = c("Chao1", "Shannon")) +
+  scale_color_manual(values = unique(sample_data_tab.cl$color_p[order(sample_data_tab.cl$period)])) +
+  theme_bw() + theme(legend.title = element_blank(),
+                     axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  geom_violin() + geom_jitter(height = 0, width = 0.1)
+
+period_richness_filt
+
+# ggbetweenstats with the filtered data
+plt1_filt <- ggbetweenstats(data = richness_data_filt, x = period, y = Chao1, type = "nonparametric") +
+  scale_color_manual(values = viridis_palette) +
+  scale_fill_manual(values = viridis_palette)
+
+plt2_filt <- ggbetweenstats(data = richness_data_filt, x = period, y = Shannon, type = "nonparametric") +
+  scale_color_manual(values = viridis_palette) +
+  scale_fill_manual(values = viridis_palette)
+
+plt3_filt <- ggbetweenstats(data = richness_data_filt, x = site, y = Chao1, type = "nonparametric") +
+  scale_color_manual(values = magma_palette) +
+  scale_fill_manual(values = magma_palette)
+
+plt4_filt <- ggbetweenstats(data = richness_data_filt, x = site, y = Shannon, type = "nonparametric") +
+  scale_color_manual(values = magma_palette) +
+  scale_fill_manual(values = magma_palette)
+
+plt5_filt <- ggbetweenstats(data = richness_data_filt, x = category, y = Chao1, type = "nonparametric",
+                            package = "colorBlindness", palette = "Blue2DarkOrange18Steps")
+
+plt6_filt <- ggbetweenstats(data = richness_data_filt, x = category, y = Shannon, type = "nonparametric",
+                            package = "colorBlindness", palette = "Blue2DarkOrange18Steps")
+
+bac_period_richness_comparison_plot_filt <- (plt1_filt + plt2_filt) / (plt3_filt + plt4_filt) / (plt5_filt + plt6_filt)
+bac_period_richness_comparison_plot_filt
+
+# Quick comparison: do the medians/means change much with and without the filter?
+summary(richness_data$Shannon)       # original (557 ASVs)
+summary(richness_data_filt$Shannon)  # filtered (259 ASVs)
+summary(richness_data$Chao1)
+summary(richness_data_filt$Chao1)
+
+
+richness_summary_period_filt <- richness_data_filt %>%
+  group_by(period) %>%
+  summarise(
+    n            = n(),
+    mean_Shannon = mean(Shannon, na.rm = TRUE),
+    sd_Shannon   = sd(Shannon, na.rm = TRUE),
+    se_Shannon   = sd_Shannon / sqrt(n),
+    mean_Chao1   = mean(Chao1, na.rm = TRUE),
+    sd_Chao1     = sd(Chao1, na.rm = TRUE),
+    se_Chao1     = sd_Chao1 / sqrt(n)
+  )
+
+richness_summary_period_filt
+
+
 
 ##      3.3. TAXONOMIC SUMMARIES      ####
 
@@ -878,6 +966,7 @@ ggsave("results/bacteria_genus_composition_site_period.png", plot = genus_compos
 save(count_tab.cl.bacteria, sample_data_tab.cl.bacteria, tax_table.cl.bacteria,
     bac_period_richness_comparison_plot,
     bac_period_richness_all,
+    bac_period_richness_comparison_plot_filt,
     flower_cat_bac_richness,
     bac_major_taxa_all,
     bac_major_taxa_period,

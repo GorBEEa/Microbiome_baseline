@@ -741,6 +741,28 @@ combined_bac_fungi_genus_comp_period_v2 <- bac_genus_composition_period /
 
 combined_bac_fungi_genus_comp_period_v2
 
+###
+
+library(patchwork)
+
+combined_bac_fungi_genus_comp_period_v3 <- 
+  bac_genus_composition_period / 
+  fung_genus_composition_period_v3 +
+  plot_layout(heights = c(10, 10)) +  # no 'guides = "collect"'
+  plot_annotation(tag_levels = "A")
+
+combined_bac_fungi_genus_comp_period_v3
+
+
+
+
+
+###
+
+
+
+
+
 ggsave("results/combined_bac_fungi_genus_comp_period.png", plot = combined_bac_fungi_genus_comp_period, width = 18, height = 6, units = "in", dpi = 300)
 ggsave("results/combined_bac_fungi_genus_comp_period_v2.png", plot = combined_bac_fungi_genus_comp_period_v2, width = 18, height = 12, units = "in", dpi = 300)
 
