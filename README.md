@@ -1,6 +1,6 @@
 # Microbiome_baseline 🐝 🧬🦠
 
-Data and analysis code for the microbiome (16S bacteria + ITS fungi) composition of *Bombus pascuorum* individuals sampled through time and space in Gorbea Natural Park (GorBEEa project), together with floral resource data.
+Data and analysis code for the microbiome (16S bacteria + ITS fungi) composition of *Bombus pascuorum* individuals sampled through time and space in Gorbea Natural Park ([GorBEEa project](https://gorbeea.bc3research.org/)), together with floral resource data.
 
 > Chueca Luis J., Poza Jon, Dhami Manpreet K., Donald Marion L., Gostout Christian, Hermosilla Brais, Rose Jennifer, Salgado-Irazabal Xabier & Magrach Ainhoa. **Seasonality and spatial context shape the gut microbiome diversity of the common carder bee *Bombus pascuorum***. *in prep*.
 
